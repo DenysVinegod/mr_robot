@@ -1,0 +1,10 @@
+<?php 
+
+$params_database_main = array(
+    'dbhost' => 'localhost',
+    'dbuser' => 'mr_robot', 
+    'dbpass' => 'ip$Hone123',
+    'dbname' => 'mr_robot'
+);
+
+?>

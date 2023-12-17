@@ -1,0 +1,11 @@
+# Hiden files
+.*
+
+# Database configs
+configs/*.conf
+configs/*.inc
+configs/*.php
+
+# But indexing gitignore & other
+!.gitignore
+!*.example
