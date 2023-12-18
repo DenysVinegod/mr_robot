@@ -1,24 +1,154 @@
-html, body, .page_wrapper {
+:root {
+    --main_datk: #100505;
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+html, body, #page_wrapper {
     height: 100%;
+}
+
+html {
+    background-color: var(--main_datk);
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 body {
     margin: 0;
 }
 
-.page_wrapper {
+.filler {
+    flex-grow: 2;
+}
+
+#page_wrapper {
     display: flex;
     flex-flow: column nowrap;
 }
 
 #page_header {
-    flex-grow: 1;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+#page_header #block_logo img {
+    height: 120px;
+    margin-bottom: -20px;
+}
+
+#page_header #menu_container {
+    display: flex;
+    align-items: center;
 }
 
 #page_body {
     flex-grow: 2;
 }
 
+#page_body {
+    border: solid 2px white;
+    margin: 5px 40px 30px 20px;
+}
+
+#page_body2 {
+    position: relative;
+    top: 20px;
+    left: 25px;
+    height: calc(100% - 45px);
+    padding: 10px 35px 35px 10px;
+    border: solid 2px white;
+}
+
+.additional_menu {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.additional_menu .menu_button {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: solid 2px white;
+    padding: 10px;
+}
+
+.additional_menu .menu_button img {
+    height: 30px;
+    width: 30px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: white;
+    color: black;
+    text-align: center;
+    padding: 5px;
+  
+    /* Position the tooltip */
+    position: absolute;
+    top: -35px;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    overflow: auto;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    border: 1px solid black;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    max-height: 80%;
+}
+  
+.modal.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header .close-button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+#overlay {
+    position: fixed;
+    opacity: 0;
+    transition: 200ms ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .7);
+    pointer-events: none;
+}
+  
+#overlay.active {
+    opacity: 1;
+    pointer-events: all;
+    z-index: 9;
+}
+
 #page_footer {
-    flex-grow: 1;
+    display: flex;
+    justify-content: center;
 }

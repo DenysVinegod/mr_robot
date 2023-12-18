@@ -1,13 +1,5 @@
 <?php
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
-
-if (isset($_SESSION['message'])) {
-    foreach($_SESSION['message'] as $key => $value) {
-        echo ("<div class='message {$key}'>{$value}</div>");
-        unset($_SESSION['message']);
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -36,11 +28,28 @@ if (isset($_SESSION['message'])) {
         </head>
 		<body>
             <!-- Links image -->
-			<img src="" style="display: none;">
-            <div class="page_wrapper">
+			<img src="/app/assets/images/style/logo_brown.png" 
+                style="display: none;">
+            <div id="page_wrapper">
                 <div id="page_header">
-                    <nav class="main_menu">
-                        <a href="?account_action=logout">Вийти з аккаунту</a>
-                    </nav>
+                    <div id="block_logo">
+                        <img src="/app/assets/images/style/logo.png" alt="logo">
+                    </div>
+                    <div class="filler"></div>
+                    <div id="menu_container">
+                        <nav class="main_menu">
+                            <a href="?account_action=logout">
+                                <img src="/app/assets/images/style/log_out.png" 
+                                    alt="Вихід">
+                            </a>
+                        </nav>
+                    </div>
                 </div>
                 <div id="page_body">
+                    <div id="page_body2">
+                        <?php if (isset($_SESSION['message'])) {
+                            foreach($_SESSION['message'] as $key => $value) {
+                                echo ("<div class='message {$key}'>{$value}</div>");
+                                unset($_SESSION['message']);
+                            }
+                        } ?>
