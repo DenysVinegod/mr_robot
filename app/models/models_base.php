@@ -4,9 +4,9 @@
  * show_params_html()
  */
 class ModelsBase {
-    private $connection;
+    protected $connection;
     
-    private $dbparams;
+    protected $dbparams;
     
     function __construct($params_a = array(
         'dbhost' => 'localhost',
@@ -20,7 +20,7 @@ class ModelsBase {
 		    $this -> dbparams['name'] = $params_a['dbname'];
     }
 
-    private function connect_to_db(): void{
+    protected function connect_to_db(): void{
 		$this -> connection = new mysqli(   $this -> dbparams['host'], 
                                             $this -> dbparams['user'], 
 			                                $this -> dbparams['pass'], 
@@ -29,7 +29,7 @@ class ModelsBase {
 		$this -> connection -> query('SET NAMES utf8');
 	}
 
-    private function close(): void {
+    protected function close(): void {
 		$this -> connection -> close();
 	}
 
@@ -45,7 +45,7 @@ class ModelsBase {
             );
     }
 
-    private function clear_input($data): string{
+    protected function clear_input($data): string{
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data);

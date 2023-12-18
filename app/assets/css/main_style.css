@@ -1,0 +1,24 @@
+html, body, .page_wrapper {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.page_wrapper {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+#page_header {
+    flex-grow: 1;
+}
+
+#page_body {
+    flex-grow: 2;
+}
+
+#page_footer {
+    flex-grow: 1;
+}
