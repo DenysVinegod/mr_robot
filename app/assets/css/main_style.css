@@ -186,30 +186,23 @@ body {
 
 .modal #submit_wrapper {
     width: fit-content;
-    margin: 0 auto;
+    margin: 5px auto 0;
     border: solid 1px white;
 }
 
-.modal #submit_wrapper:hover {
-    margin-bottom: -2px;
-}
-
 .modal input[type=submit] {
+    cursor: pointer;
     font-size: 1.2em;
-    background-color: var(--main_datk);
+    background-color: rgba(16, 5, 5, 0);
+    transition: 300ms ease-in-out;
     color: white;
-    border: none;
+    border: solid 1px white;
     padding: 10px 5px 5px 10px;
 }
 
 .modal input[type=submit]:hover {
-    background-color: rgba(16, 5, 5, 0);
     transform: translate(5px, 5px);
-    border: solid 1px white;
-    padding-top: 5px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    padding-left: 5px;
+    padding: 5px 10px 10px 5px;
 }
 
 #overlay {
