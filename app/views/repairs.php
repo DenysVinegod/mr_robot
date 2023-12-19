@@ -24,7 +24,7 @@ $controller = new Repair();
     
 </div>
 
-<div id="modal_editor" class="modal">
+<div id="modal_new_repair_editor" class="modal">
     <div class="modal_header">
         <p>Нове замовлення</p>
         <button data-close-button class="close-button">&times;</button>
@@ -91,8 +91,12 @@ $controller = new Repair();
             </fieldset>
             <fieldset>
                 <legend>Дані про замовлення:</legend>
-                <label for="registered_datetime">
+                <label for="registered_datetime" class="nowrap">
                     Дата/час прийняття заявки
+                    <input id="time_updater_chbox" 
+                        type="checkbox" 
+                        name="time_updater">
+                    <label for="time_updater_chbox">Автоматично</label>
                 </label>
                 <input id="registered_datetime" 
                     class="editor_input"
@@ -109,7 +113,7 @@ $controller = new Repair();
                     placeholder="Причина звернення/коментар"
                     required></textarea>
             </fieldset>
-            <fieldset id="additional_fieldset">
+            <fieldset id="additional_fieldset" style="display: none;">
                 <input id="manager_id" 
                     name="manager_id" 
                     type="text" 
@@ -117,7 +121,9 @@ $controller = new Repair();
                     required>
             </fieldset>
             <fieldset>
-                <input class="editor_input" type="submit" value="Зберегти">
+                <div id="submit_wrapper">
+                    <input type="submit" value="Зберегти">
+                </div>
             </fieldset>
         </form>
     </div>

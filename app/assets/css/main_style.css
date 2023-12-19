@@ -28,6 +28,10 @@ body {
     flex-grow: 2;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
 #page_wrapper {
     display: flex;
     flex-flow: column nowrap;
@@ -130,10 +134,6 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 
-.modal fieldset{
-    margin: 5px 0;
-}
-
 .modal_header {
     display: flex;
     flex-flow: row nowrap;
@@ -154,6 +154,62 @@ body {
     font-size: 1.25rem;
     font-weight: bold;
     color: white;
+}
+
+.modal fieldset {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 5px 0;
+}
+
+.modal .editor_input {
+    background-color: var(--main_datk);
+    color: white;
+    border: none;
+    border-bottom: solid 1px white;
+    font-size: 1.2em;
+    color-scheme: dark;
+}
+
+.modal label {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.modal label input[type=checkbox] {
+    margin-left: 30px;
+}
+
+.modal .editor_input:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.modal #submit_wrapper {
+    width: fit-content;
+    margin: 0 auto;
+    border: solid 1px white;
+}
+
+.modal #submit_wrapper:hover {
+    margin-bottom: -2px;
+}
+
+.modal input[type=submit] {
+    font-size: 1.2em;
+    background-color: var(--main_datk);
+    color: white;
+    border: none;
+    padding: 10px 5px 5px 10px;
+}
+
+.modal input[type=submit]:hover {
+    background-color: rgba(16, 5, 5, 0);
+    transform: translate(5px, 5px);
+    border: solid 1px white;
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
 }
 
 #overlay {
