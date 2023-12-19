@@ -33,7 +33,10 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
             <div id="page_wrapper">
                 <div id="page_header">
                     <div id="block_logo">
-                        <img src="/app/assets/images/style/logo.png" alt="logo">
+                        <a href="/">
+                            <img src="/app/assets/images/style/logo.png" 
+                                alt="logo">
+                        </a>
                     </div>
                     <div class="filler"></div>
                     <div id="menu_container">

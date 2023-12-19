@@ -1,5 +1,6 @@
             </div>
         </div>
+        <div id="main_style_gap"></div>
         <div id="page_footer">
             &copy; 2023-<?php echo date("Y");?> Denys Melnychuk(
 			<a target="_blank" 
