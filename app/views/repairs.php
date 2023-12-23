@@ -30,7 +30,7 @@ $controller = new Repair();
         <button data-close-button class="close-button">&times;</button>
     </div>
     <div class="modal_body">
-        <form action="" method="POST">
+        <form action="/app/controllers/repair.php" method="POST">
             <fieldset>
                 <legend>Дані про замовника:</legend>
                 <input id="customer_surname" 

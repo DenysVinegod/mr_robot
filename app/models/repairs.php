@@ -15,8 +15,4 @@ class Repairs extends ModelsBase {
     }
 }
 
-if (isset($_POST)) {
-    echo var_dump($_POST);
-}
-
 ?>

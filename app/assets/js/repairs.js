@@ -12,13 +12,14 @@ function closeModal(modal) {
 
 function write_current_datetimer_to_value(node){
     var m = new Date();
+    var seconds = node.value.split(':');
     var dateString =
         m.getFullYear() + "-" +
         ("00" + (m.getMonth()+1)).slice(-2) + "-" +
         ("00" + m.getDate()).slice(-2) + "T" +
         ("00" + m.getHours()).slice(-2) + ":" +
         ("00" + m.getMinutes()).slice(-2) + ":" +
-        ("00" + m.getSeconds()).slice(-2);
+        seconds[2];
     node.value = dateString;
 }
 
@@ -26,7 +27,7 @@ function datetimer_for_new_repair() {
     if (timer_chbox.checked) {
         timer = setInterval(() => {
             write_current_datetimer_to_value(this.document.getElementById('registered_datetime'))
-        }, 1000);
+        }, 60000);
     } else {
         clearInterval(timer);
     }
