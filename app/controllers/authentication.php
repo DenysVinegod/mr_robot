@@ -55,5 +55,4 @@ if (sizeof($_POST)) {
     header('Location: /app/views/log_in.php');
     exit();
 }
-
 ?>

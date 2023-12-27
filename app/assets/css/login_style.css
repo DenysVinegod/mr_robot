@@ -1,0 +1,93 @@
+:root {
+    --main_datk: #100505;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+html {
+    margin: 0;
+    background-color: var(--main_datk);
+    color: white;
+    font-family: 
+        'Lucida Sans', 
+        'Lucida Sans Regular', 
+        'Lucida Grande', 
+        'Lucida Sans Unicode', 
+        Geneva, 
+        Verdana, 
+        sans-serif;
+}
+
+body {
+    display: flex;
+    flex-flow: column nowrap;
+
+}
+
+#header {
+    margin-bottom: -97px;
+}
+
+#logo {
+    margin: 10px;
+}
+
+#header #logo img {
+    height: 70px;
+}
+
+#login_header > p {
+    margin: 0;
+    text-align: center;
+}
+
+#body {
+    flex-grow: 2;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+#message_block {
+    margin-bottom: 10px;
+}
+
+.message {
+    min-width: 374px;
+    border: solid 1px white;
+    padding: 10px;
+}
+
+#body form {
+    /* margin-top: -97px; */
+    width: 400px;
+}
+
+#body form table {
+    margin: 20px auto 0;
+}
+
+#submit_wrapper {
+    width: fit-content;
+    margin: 15px auto 5px;
+    border: solid 1px white;
+}
+
+input[type=submit] {
+    cursor: pointer;
+    font-size: 1.2em;
+    background-color: rgba(16, 5, 5, 0);
+    transition: 300ms ease-in-out;
+    color: white;
+    border: solid 1px white;
+    padding: 10px 5px 5px 10px;
+}
+
+input[type=submit]:hover {
+    transform: translate(5px, 5px);
+    padding: 5px 10px 10px 5px;
+}
