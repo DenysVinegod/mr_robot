@@ -17,7 +17,14 @@ html, body, #page_wrapper {
 html {
     background-color: var(--main_datk);
     color: white;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 
+        'Lucida Sans', 
+        'Lucida Sans Regular', 
+        'Lucida Grande', 
+        'Lucida Sans Unicode', 
+        Geneva, 
+        Verdana, 
+        sans-serif;
 }
 
 body {
@@ -43,8 +50,8 @@ body {
 }
 
 #page_header #block_logo img {
-    height: 120px;
-    margin-bottom: -20px;
+    height: 70px;
+    margin: 5px 10px 0;
 }
 
 #page_header #menu_container {
@@ -55,38 +62,42 @@ body {
 #page_body {
     flex-grow: 2;
     border: solid 2px rgb(200, 200, 200);
-    margin: 0 27px 0 5px;
+    margin: 10px;
+    padding: 10px;
 }
 
-#page_body2 {
-    position: relative;
-    top: 20px;
-    left: 24px;
-    height: 100%;
-    padding: 10px 34px 34px 10px;
-    border: solid 2px rgb(200, 200, 200);
-}
-
-#main_style_gap {
-    height: 30px;
+#page_body .message {
+    margin: 0 10px 10px 0;
+    border: solid 1px rgb(200, 200, 200);
+    padding: 10px;
+    text-align: center;
 }
 
 .additional_menu {
     display: flex;
     flex-flow: row wrap;
+    margin-right: 10px;
+}
+
+.additional_menu .menu_button_wrapper {
+    border: solid 1px white;
 }
 
 .additional_menu .menu_button {
+    cursor: pointer;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
-    border: solid 2px rgb(200, 200, 200);
-    padding: 10px;
+    transition: 300ms ease-in-out;
+    border: solid 1px rgb(200, 200, 200);
+    padding: 10px 5px 5px 10px;
 }
 
+
 .additional_menu .menu_button:hover {
-    border-radius: 27px;
+    transform: translate(5px, 5px);
+    padding: 5px 10px 10px 5px;
 }
 
 .additional_menu .menu_button img {
@@ -184,13 +195,20 @@ body {
     margin-bottom: 20px;
 }
 
-.modal #submit_wrapper {
+#control_buttons {
+    flex-flow: row wrap;
+    justify-content: space-around;
+}
+
+.modal #submit_wrapper,
+.modal #reset_wrapper {
     width: fit-content;
     margin: 5px auto 0;
     border: solid 1px white;
 }
 
-.modal input[type=submit] {
+.modal input[type=submit],
+.modal input[type=reset] {
     cursor: pointer;
     font-size: 1.2em;
     background-color: rgba(16, 5, 5, 0);
@@ -200,7 +218,8 @@ body {
     padding: 10px 5px 5px 10px;
 }
 
-.modal input[type=submit]:hover {
+.modal input[type=submit]:hover,
+.modal input[type=reset]:hover {
     transform: translate(5px, 5px);
     padding: 5px 10px 10px 5px;
 }
@@ -221,6 +240,35 @@ body {
     opacity: 1;
     pointer-events: all;
     z-index: 9;
+}
+
+.repairs_table_container {
+    margin-top: 10px;
+    margin-right: 10px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr.odd {
+    background-color: rgba(200, 200, 200, 0.15);
+}
+
+tr:hover {
+    background-color: rgba(200, 200, 200, 0.5);
+}
+
+th, td {
+    border: solid 1px white;
+}
+
+td {
+    padding: 5px;
+    /* text-align: center; */
 }
 
 #page_footer {

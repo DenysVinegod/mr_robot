@@ -51,5 +51,29 @@ class ModelsBase {
         $data = htmlspecialchars($data);
         return $data;
     }
+
+    function set_native_table(string $name): void {
+        $this -> native_table = $name;
+    }
+
+    function list_elements($table_name = 'ignore'): array {
+        $vault = array();
+        if ($table_name != 'ignore') {
+            $query = "SELECT * from `{$table_name}`;";
+        } else if (isset($this -> native_table)) {
+            $query = "SELECT * from `{$this -> native_table}`;";
+        } else return $vault;
+
+        $this -> connect_to_db();
+        $result = $this -> connection -> query($query);
+        $this -> close();
+        $counter = 0;
+        while ($row = $result -> fetch_assoc()) {
+            $vault[$counter] = $row;
+            $counter++;
+        }
+
+        return $vault;
+    }
 }
 ?>

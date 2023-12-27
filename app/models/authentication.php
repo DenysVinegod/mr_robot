@@ -17,5 +17,4 @@ class Authentication extends ModelsBase {
         }
     }
 }
-
 ?>

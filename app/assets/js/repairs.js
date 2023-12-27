@@ -25,6 +25,7 @@ function write_current_datetimer_to_value(node){
 
 function datetimer_for_new_repair() {
     if (timer_chbox.checked) {
+        write_current_datetimer_to_value(this.document.getElementById('registered_datetime'));
         timer = setInterval(() => {
             write_current_datetimer_to_value(this.document.getElementById('registered_datetime'))
         }, 60000);
@@ -45,6 +46,7 @@ window.addEventListener('load', function () {
         const modal = this.document.getElementById("modal_new_repair_editor");
         openModal(modal);
         timer_chbox.checked = true;
+        write_current_datetimer_to_value(this.document.getElementById('registered_datetime'));
         datetimer_for_new_repair();
     });
 

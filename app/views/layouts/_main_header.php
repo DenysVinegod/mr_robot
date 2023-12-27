@@ -49,10 +49,10 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
                     </div>
                 </div>
                 <div id="page_body">
-                    <div id="page_body2">
-                        <?php if (isset($_SESSION['message'])) {
-                            foreach($_SESSION['message'] as $key => $value) {
-                                echo ("<div class='message {$key}'>{$value}</div>");
-                                unset($_SESSION['message']);
-                            }
-                        } ?>
+                    <?php if (isset($_SESSION['message'])) {
+                        foreach($_SESSION['message'] as $key => $value) {
+                            echo ("<div class='message {$key}'>{$value}</div>");
+                            unset($_SESSION['message']);
+                        }
+                    } ?>
+                    
