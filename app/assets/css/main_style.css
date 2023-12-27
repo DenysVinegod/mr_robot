@@ -73,17 +73,20 @@ body {
     text-align: center;
 }
 
-.additional_menu {
+.additional_menu,
+#categories_menu {
     display: flex;
     flex-flow: row wrap;
     margin-right: 10px;
 }
 
-.additional_menu .menu_button_wrapper {
+.additional_menu .menu_button_wrapper,
+#categories_menu .card_button_wrapper{
     border: solid 1px white;
 }
 
-.additional_menu .menu_button {
+.additional_menu .menu_button,
+#categories_menu .menu_button {
     cursor: pointer;
     display: flex;
     flex-flow: column nowrap;
@@ -95,15 +98,18 @@ body {
 }
 
 
-.additional_menu .menu_button:hover {
+.additional_menu .menu_button:hover,
+#categories_menu .menu_button:hover {
     transform: translate(5px, 5px);
     padding: 5px 10px 10px 5px;
 }
 
-.additional_menu .menu_button img {
-    height: 30px;
-    width: 30px;
+#categories_menu .menu_button img {
+    height: 100px;
+    width: 100px;
 }
+
+.additional_menu .menu_button img
 
 .tooltip {
     position: relative;
