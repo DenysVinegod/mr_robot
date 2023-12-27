@@ -126,7 +126,7 @@ $controller -> model -> set_native_table("repairs");
                 <textarea id="problem_description"
                     class="editor_input"
                     name="description"
-                    maxlength="1000"
+                    maxlength="5000"
                     rows="5"
                     cols="35"
                     placeholder="Причина звернення/коментар"
@@ -254,30 +254,60 @@ $controller -> model -> set_native_table("repairs");
             </fieldset>
             <fieldset>
                 <legend>Дані про замовлення:</legend>
+                <select id="editor_status" 
+                    name="status" 
+                    class="editor_input">
+                    <?php
+                        foreach($controller 
+                            -> model -> list_elements('statuses') 
+                            as $element) {
+                            echo ("<option value='{$element['id']}'>
+                                {$element['name']}
+                            </option>");
+                        }
+                    ?>
+                </select>
                 <label for="repair_editor_registered_datetime" class="nowrap">
-                    Дата/час прийняття заявки
-                    <input id="repair_editor_time_updater_chbox" 
-                        type="checkbox" 
-                        name="time_updater">
-                    <label for="repair_editor_time_updater_chbox">Автоматично</label>
-                </label>
+                    Дата/час прийняття заявки</label>
                 <input id="repair_editor_registered_datetime" 
                     class="editor_input"
                     name="register_date" 
-                    type="datetime-local"
-                    value="<?php echo date("Y-m-d\\TH:i:s", time()); ?>"
+                    type="datetime"
                     required>
+                <label for="repair_editor_problem_description">
+                    Причина звернення/коментар</label>
                 <textarea id="repair_editor_problem_description"
                     class="editor_input"
                     name="description"
-                    maxlength="1000"
+                    maxlength="500"
                     rows="5"
                     cols="35"
                     placeholder="Причина звернення/коментар"
                     required></textarea>
+                <label for="repair_editor_price">Ціна</label>
+                <input id="repair_editor_price" 
+                    class="editor_input"
+                    type="text" 
+                    name="price" 
+                    maxlength="500" 
+                    placeholder="Ціна" 
+                    title="Введіть ціну, до 500 символів.">
+                <label for="repair_editor_master_conclusion">
+                    Коментар майстра</label>
+                <textarea id="repair_editor_master_conclusion"
+                    class="editor_input"
+                    name="master_conclusion"
+                    maxlength="1500"
+                    rows="5"
+                    cols="35"
+                    placeholder="Поломка/Коментар майстра"></textarea>
             </fieldset>
             <fieldset id="repair_editor_additional_fieldset" 
                 style="display: none;">
+                <input id="repair_editor_id" 
+                    type="text"
+                    name="id"
+                    required>
                 <input id="repair_editor_action" 
                     type="text"
                     name="action"
@@ -294,9 +324,6 @@ $controller -> model -> set_native_table("repairs");
                     required>
             </fieldset>
             <fieldset id="repair_editor_control_buttons">
-                <div id="reset_wrapper">
-                    <input type="reset" value="Скинути">
-                </div>
                 <div id="submit_wrapper">
                     <input type="submit" value="Зберегти">
                 </div>

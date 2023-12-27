@@ -2,23 +2,6 @@
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/models_base.php');
 
 class Clients extends ModelsBase {
-    function client_exist_b(array $data): bool{
-        if ((isset($data['first_name'])) 
-            && (isset($data['surname'])) 
-            && (isset($data['last_name']))) {
-            $query = "SELECT `id` FROM `clients` 
-                WHERE 
-                `first_name` = '{$this -> clear_input($data['first_name'])}' 
-                AND `surname` = '{$this -> clear_input($data['surname'])}' 
-                AND `last_name` = '{$this -> clear_input($data['last_name'])}'
-                LIMIT 1;";
-            $this -> connect_to_db();
-            $result = $this -> connection -> query($query);
-            $this -> close();
-            if ($result -> fetch_column()) return true; else return false;
-        } else return false;
-    }
-
     /**
      * @return bool false if input array invalid
      */
@@ -58,8 +41,8 @@ class Clients extends ModelsBase {
             $result = $this -> connection -> query($query);
             $this -> close();
             if ($result -> num_rows) {
-                $result = $result -> fetch_assoc();
-                return $result['id'];
+                $result = $result -> fetch_column();
+                return $result;
             } else return 0;
         } else return 0;
     }

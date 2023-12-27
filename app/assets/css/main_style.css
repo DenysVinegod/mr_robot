@@ -174,10 +174,10 @@ body {
 }
 
 .modal .editor_input {
-    background-color: var(--main_datk);
+    background-color: rgb(40, 20, 20);
     color: white;
     border: none;
-    border-bottom: solid 1px white;
+    border-bottom: solid 1px rgba(200, 200, 200, 0.3);
     font-size: 1.2em;
     color-scheme: dark;
 }
