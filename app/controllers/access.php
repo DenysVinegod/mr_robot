@@ -9,13 +9,36 @@ if (isset($_GET['account_action'])) {
     }
 }
 
-if (isset($_SESSION['account'])) {
+$message['auth']['need_auth'] = 'Необхідна аутентифікація користувача!';
+$message['auth']['failed'] = 'Проблеми із входом у систему!';
 
-} else {
-    if ($_SESSION['service_block']['authentication_process'] != 'started') {
-        $_SESSION['message']['warning'] = "Необхідна аутентифікація користувача!";
-        $_SESSION['come_back_url'] = $_SERVER['REQUEST_URI'];
-        header("Location: /app/views/log_in.php");
+if (isset($_SESSION['account'])) {
+    if (isset($_SESSION['account']['status'])) {
+        switch ($_SESSION['account']['status']) {
+            case 'authenticated': 
+                break;
+
+            // case 'auth_first_stage':
+            //     break;
+            
+            default:
+                $_SESSION['message']['info'] = $message['auth']['failed'];
+                $_SESSION['come_back_url'] = $_SERVER['REQUEST_URI'];
+                // header('Location: /app/views/log_in.php');
+                break;
+        }
     }
+    echo "<pre>";
+    var_dump($_SESSION);
+    echo "</pre>";
+    exit ("account is set");
+} else {
+    $_SESSION['account']['status'] = 'auth_first_stage';
+    $_SESSION['message']['info'] = $message['auth']['need_auth'];
+    $_SESSION['come_back_url'] = $_SERVER['REQUEST_URI'];
+    var_dump($_SESSION);
+    echo "<hr>";
+    exit("account not set");
+    header('Location: /app/views/log_in.php');
 }
 ?>
