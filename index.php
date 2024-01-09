@@ -7,6 +7,7 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/views/layouts/_main_header.php');
             class='menu_button' 
             href="/app/views/repairs.php">
             <img src='/app/assets/images/style/repair.png'>
+            Ремонти
         </a>
     </div>
 </nav>

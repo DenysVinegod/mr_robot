@@ -77,7 +77,7 @@ body {
 #categories_menu {
     display: flex;
     flex-flow: row wrap;
-    margin-right: 10px;
+    justify-content: center;
 }
 
 .additional_menu .menu_button_wrapper,
@@ -95,6 +95,8 @@ body {
     transition: 300ms ease-in-out;
     border: solid 1px rgb(200, 200, 200);
     padding: 10px 5px 5px 10px;
+    color: white;
+    text-decoration: none;
 }
 
 
