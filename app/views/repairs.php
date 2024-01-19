@@ -12,7 +12,7 @@ $controller -> model -> set_native_table("repairs");
         <a id="button_back" 
             class='tooltip menu_button' 
             href="/">
-            <img src='/app/assets/images/style/log_out.png'>
+            <img src='/app/assets/images/style/log_out_black.png'>
             <span class='tooltiptext'>Назад</span>
         </a>
     </div>
@@ -21,7 +21,7 @@ $controller -> model -> set_native_table("repairs");
         <div id="new_repair" 
             class='tooltip menu_button' 
             data-modal-target='#modal_editor'>
-            <img src='/app/assets/images/style/pencil.png'>
+            <img src='/app/assets/images/style/plus_black.png'>
             <span class='tooltiptext'>Створити</span>
         </div>
     </div>
@@ -174,6 +174,9 @@ $controller -> model -> set_native_table("repairs");
 <div id="modal_repair_editor" class="modal">
     <div class="modal_header">
         <p>Замовлення #<span id="editor_repair_id"></span></p>
+        <button id="enable_editor" class="modal_button">
+            <img src="/app/assets/images/style/pencil_black.png">
+        </button>
         <button data-close-button class="close-button">&times;</button>
     </div>
     <div class="modal_body">
