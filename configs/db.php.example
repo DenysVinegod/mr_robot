@@ -1,8 +1,8 @@
 <?php 
 $params_database_main = array(
-    'dbhost' => 'localhost',
-    'dbuser' => 'mr_robot', 
-    'dbpass' => 'ip$Hone123',
+    'dbhost' => 'db_host',
+    'dbuser' => 'db_user', 
+    'dbpass' => 'db_pass',
     'dbname' => 'mr_robot'
 );
 ?>

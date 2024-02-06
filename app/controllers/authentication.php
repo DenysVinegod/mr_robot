@@ -32,14 +32,13 @@ if (sizeof($_POST)) {
             $_SESSION['account'] = array_merge($_SESSION['account'], $search);
             $_SESSION['message']['info'] = 'Authenticated successfully!';
             if (isset($_SESSION['come_back_url'])) {
-                $back_path = $_SESSION['come_back_url'];
+                $back_path = 
+                    ($_SESSION['come_back_url'] == '/app/views/log_in.php') ? 
+                    "/" : $_SESSION['come_back_url'];
                 unset($_SESSION['come_back_url']);
-                header("Location: {$back_path}");
-                exit();
-            } else {
-                header("Location: /");
-                exit();
-            }
+            } else $back_path = "/";
+            header("Location: {$back_path}");
+            exit();
         } else {
             $pass_hash = password_hash($_POST['user_password'], PASSWORD_DEFAULT);
             $_SESSION['message']['warning'] = "Password {$pass_hash} wrong.";

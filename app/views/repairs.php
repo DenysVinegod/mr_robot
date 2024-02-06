@@ -21,7 +21,7 @@ $controller -> model -> set_native_table("repairs");
         <div id="new_repair" 
             class='tooltip menu_button' 
             data-modal-target='#modal_editor'>
-            <img src='/app/assets/images/style/plus_black.png'>
+            <img src='/app/assets/images/style/new_page.png'>
             <span class='tooltiptext'>Створити</span>
         </div>
     </div>

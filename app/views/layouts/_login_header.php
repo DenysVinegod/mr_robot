@@ -1,6 +1,6 @@
 <?php 
 if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
-$_SESSION['service_block']['authentication_process'] = 'started';
+
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
 ?>
 
