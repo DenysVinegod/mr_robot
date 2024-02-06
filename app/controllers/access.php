@@ -9,9 +9,9 @@ if (isset($_GET['account_action'])) {
     }
 }
 
-$message['auth']['need_auth'] = 'Необхідна аутентифікація користувача!';
-$message['auth']['access_denyed'] = 'Аутентифікуйтеся щоб отримати доступ!';
-$message['auth']['failed'] = 'Проблеми із входом у систему!';
+$message['auth']['need_auth']       = 'Необхідна аутентифікація користувача!';
+$message['auth']['access_denyed']   = 'Аутентифікуйтеся щоб отримати доступ!';
+$message['auth']['failed']          = 'Проблеми із входом у систему!';
 
 if (isset($_SESSION['account'])) {
     if (isset($_SESSION['account']['status'])) {

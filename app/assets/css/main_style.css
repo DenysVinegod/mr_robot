@@ -3,7 +3,7 @@
 }
 
 :root {
-    --main_datk: #100505;
+    --main_dark: #100505;
 }
 
 *, *::after, *::before {
@@ -15,8 +15,7 @@ html, body, #page_wrapper {
 }
 
 html {
-    background-color: var(--main_datk);
-    color: white;
+    color: var(--main_dark);
     font-family: 
         'Lucida Sans', 
         'Lucida Sans Regular', 
@@ -45,6 +44,7 @@ body {
 }
 
 #page_header {
+    background-color: var(--main_dark);
     display: flex;
     flex-flow: row nowrap;
 }
@@ -61,14 +61,13 @@ body {
 
 #page_body {
     flex-grow: 2;
-    border: solid 2px rgb(200, 200, 200);
     margin: 10px;
     padding: 10px;
 }
 
 #page_body .message {
     margin: 0 10px 10px 0;
-    border: solid 1px rgb(200, 200, 200);
+    border: solid 1px var(--main_dark);
     padding: 10px;
     text-align: center;
 }
@@ -82,7 +81,7 @@ body {
 
 .additional_menu .menu_button_wrapper,
 #categories_menu .card_button_wrapper{
-    border: solid 1px white;
+    border: solid 1px var(--main_dark);
 }
 
 .additional_menu .menu_button,
@@ -93,9 +92,9 @@ body {
     justify-content: center;
     align-items: center;
     transition: 300ms ease-in-out;
-    border: solid 1px rgb(200, 200, 200);
+    margin: -1px;
+    border: solid 1px var(--main_dark);
     padding: 10px 5px 5px 10px;
-    color: white;
     text-decoration: none;
 }
 
@@ -111,7 +110,9 @@ body {
     width: 100px;
 }
 
-.additional_menu .menu_button img
+.additional_menu .menu_button img {
+    height: 30px;
+}
 
 .tooltip {
     position: relative;
@@ -144,8 +145,8 @@ body {
     overflow: auto;
     transform: translate(-50%, -50%) scale(0);
     transition: 200ms ease-in-out;
-    background-color: var(--main_datk);
-    border: 1px solid white;
+    background-color: white;
+    border: 1px solid var(--main_dark);
     padding: 5px;
 }
   
@@ -157,6 +158,7 @@ body {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
+    margin-top: 10px;
 }
 
 .modal_header p {
@@ -172,7 +174,10 @@ body {
     background: none;
     font-size: 1.25rem;
     font-weight: bold;
-    color: white;
+}
+
+.modal_header #enable_editor img{
+    height: 20px;
 }
 
 .modal fieldset {
@@ -182,12 +187,14 @@ body {
 }
 
 .modal .editor_input {
-    background-color: rgb(40, 20, 20);
-    color: white;
-    border: none;
-    border-bottom: solid 1px rgba(200, 200, 200, 0.3);
+    color: var(--main_dark);
     font-size: 1.2em;
-    color-scheme: dark;
+}
+
+.modal input:disabled,
+.modal select:disabled,
+.modal textarea:disabled {
+    color: rgb(99, 95, 95);
 }
 
 .modal label {
@@ -212,17 +219,15 @@ body {
 .modal #reset_wrapper {
     width: fit-content;
     margin: 5px auto 0;
-    border: solid 1px white;
+    border: solid 1px var(--main_dark);
 }
 
 .modal input[type=submit],
 .modal input[type=reset] {
     cursor: pointer;
     font-size: 1.2em;
-    background-color: rgba(16, 5, 5, 0);
     transition: 300ms ease-in-out;
-    color: white;
-    border: solid 1px white;
+    border: solid 1px var(--main_dark);
     padding: 10px 5px 5px 10px;
 }
 
@@ -252,7 +257,6 @@ body {
 
 .repairs_table_container {
     margin-top: 10px;
-    margin-right: 10px;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
@@ -271,7 +275,7 @@ tr:hover {
 }
 
 th, td {
-    border: solid 1px white;
+    border: solid 1px var(--main_dark);
 }
 
 td {
