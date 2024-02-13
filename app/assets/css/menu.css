@@ -1,0 +1,128 @@
+/* Main menu */
+nav.main_menu {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+nav.main_menu .main_menu_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    height: 50px;
+    width: 50px;
+    border: 0;
+    border-radius: 50%;
+}
+
+nav.main_menu .main_menu_item:hover {
+    background-color: rgba(100, 100, 100, 0.5);
+}
+
+.main_menu_item img {
+    border: 0;
+    border-radius: 50%;
+    margin: 0px;
+    height: 32px;
+    width: 32px;
+}
+
+#main_menu_window {
+    position: absolute;
+    top: 85px;
+    right: 10px;
+    max-width: 35%;
+    z-index: 10;
+    transform: translate(50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: var(--main_dark);
+    color: white;
+}
+
+#main_menu_window.active {
+    transform: translate(0, 0) scale(1);
+}
+
+#main_menu_window #items_container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+}
+
+#main_menu_window #items_container .item a {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+}
+
+#main_menu_window #items_container .item a img {
+    height: 60px;
+    padding: 10px;
+    border: 0;
+    border-radius: 50%;
+}
+
+#main_menu_window #items_container .item a:hover img {
+    background-color: rgba(100, 100, 100, 0.5);
+}
+
+.menu_modal {
+    position: absolute;
+    z-index: 10;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    background-color: white;
+    border: 1px solid red;
+    padding: 5px;
+}
+
+/* Aditional menu */
+.additional_menu,
+#categories_menu {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.additional_menu .menu_button_wrapper,
+#categories_menu .card_button_wrapper{
+    border: solid 1px var(--main_dark);
+}
+
+.additional_menu .menu_button,
+#categories_menu .menu_button {
+    cursor: pointer;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    transition: 300ms ease-in-out;
+    margin: -1px;
+    border: solid 1px var(--main_dark);
+    padding: 10px 5px 5px 10px;
+    text-decoration: none;
+}
+
+
+.additional_menu .menu_button:hover,
+#categories_menu .menu_button:hover {
+    transform: translate(5px, 5px);
+    padding: 5px 10px 10px 5px;
+}
+
+#categories_menu .menu_button img {
+    height: 100px;
+    width: 100px;
+}
+
+.additional_menu .menu_button img {
+    height: 30px;
+}

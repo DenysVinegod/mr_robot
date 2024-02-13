@@ -17,11 +17,14 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
                 href="/app/assets/images/style/favicon-32.png" />
 			<link rel="stylesheet" type="text/css" 
                 href="/app/assets/css/main_style.css"/>
+            <link rel="stylesheet" type="text/css" 
+                href="/app/assets/css/menu.css"/>
 			<?php if(isset($styles)) echo $styles; ?>
 			<link rel="stylesheet" type="text/css" 
 				href="/app/assets/css/media-queries.css" />
 
 			<script src="/app/assets/js/common_script.js" defer></script>
+            <script src="/app/assets/js/menu.js" defer></script>
 			<?php if(isset($scripts)) echo $scripts; ?>
 
 			<title>mr. ROBOT</title>
@@ -39,16 +42,14 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
                         </a>
                     </div>
                     <div class="filler"></div>
-                    <div id="menu_container">
-                        <nav class="main_menu">
-                            <a href="?account_action=logout">
-                                <img src="/app/assets/images/style/log_out.png" 
-                                    alt="Вихід">
-                            </a>
-                        </nav>
-                    </div>
+                    <?php include $_SERVER['DOCUMENT_ROOT']
+                        ."/app/views/layouts/_main_menu.php" 
+                    ?>
                 </div>
                 <div id="page_body">
+                    
+                    <div id="overlay"></div>
+                    
                     <?php if (isset($_SESSION['message'])) {
                         foreach($_SESSION['message'] as $key => $value) {
                             echo ("<div class='message {$key}'>{$value}</div>");

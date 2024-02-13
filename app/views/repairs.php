@@ -257,6 +257,8 @@ $controller -> model -> set_native_table("repairs");
             </fieldset>
             <fieldset>
                 <legend>Дані про замовлення:</legend>
+                <label for="editor_status">
+                    Статус замовлення</label>
                 <select id="editor_status" 
                     name="status" 
                     class="editor_input">
@@ -334,8 +336,6 @@ $controller -> model -> set_native_table("repairs");
         </form>
     </div>
 </div>
-
-<div id="overlay"></div>
 
 <div class="repairs_table_container">
     <table id="repairs_list">
