@@ -12,6 +12,7 @@
 
 html, body, #page_wrapper {
     height: 100%;
+    overflow: hidden;
 }
 
 html {
@@ -83,6 +84,10 @@ body {
     position: absolute;
     top: -45px;
     z-index: 1;
+}
+
+.tooltip .tooltip_down {
+    top: 55px;
 }
 
 .tooltip:hover .tooltiptext {

@@ -73,12 +73,43 @@ function datetimer_for_new_repair() {
     }
 }
 
+function add_button_to_menu() {
+    let repair_menu = document.createElement("nav");
+    repair_menu.id = "repair_main_menu";
+    repair_menu.classList.add("main_menu");
+    // 
+    let new_repair_button = document.createElement("div");
+    new_repair_button.id = "new_repair_button";
+    new_repair_button.classList.add("main_menu_item");
+    new_repair_button.classList.add("tooltip");
+    new_repair_button.setAttribute("data-modal-target", "#modal_editor");
+    // 
+    let repair_button_image = document.createElement("img");
+    repair_button_image.src = "/app/assets/images/style/new_page.png";
+    // 
+    let tooltip_span = document.createElement("span");
+    tooltip_span.classList.add("tooltiptext");
+    tooltip_span.classList.add("tooltip_down");
+    tooltip_span.innerHTML = "Створити";
+
+    
+    repair_menu.appendChild(new_repair_button);
+    new_repair_button.appendChild(repair_button_image);
+    new_repair_button.appendChild(tooltip_span);
+
+    let parrent_node = document.getElementById("page_header");
+    let main_menu = document.querySelector("#page_header > nav.main_menu");
+    parrent_node.insertBefore(repair_menu, main_menu);
+}
+
 const timer_chbox = this.document.getElementById('time_updater_chbox');
 var timer;
 
 window.addEventListener('load', function () {
+    add_button_to_menu();
+
     const overlay = document.getElementById('overlay');
-    const button_new_repair_html = this.document.getElementById('new_repair');
+    const button_new_repair_html = this.document.getElementById('new_repair_button');
     const closeModalButtons = this.document.querySelectorAll('[data-close-button]');
     const list_elements = this.document.querySelectorAll('.list_line');
     const editor_all_inputs = this.document.querySelectorAll("#modal_repair_editor input, #modal_repair_editor select, #modal_repair_editor textarea");

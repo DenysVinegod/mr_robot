@@ -7,26 +7,6 @@ $controller = new Repair();
 $controller -> model -> set_native_table("repairs");
 ?>
 
-<nav class="additional_menu">
-    <div class="menu_button_wrapper">
-        <a id="button_back" 
-            class='tooltip menu_button' 
-            href="/">
-            <img src='/app/assets/images/style/log_out_black.png'>
-            <span class='tooltiptext'>Назад</span>
-        </a>
-    </div>
-    <div class="filler"></div>
-    <div class="menu_button_wrapper">
-        <div id="new_repair" 
-            class='tooltip menu_button' 
-            data-modal-target='#modal_editor'>
-            <img src='/app/assets/images/style/new_page.png'>
-            <span class='tooltiptext'>Створити</span>
-        </div>
-    </div>
-</nav>
-
 <div id="modal_new_repair_editor" class="modal">
     <div class="modal_header">
         <p>Нове замовлення</p>
