@@ -16,7 +16,7 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
 			<link rel="shortcut icon" 
                 href="/app/assets/images/style/favicon-32.png" />
 			<link rel="stylesheet" type="text/css" 
-                href="/app/assets/css/main_style.css"/>
+                href="/app/assets/css/main_style.css?v=0.0.2"/>
             <link rel="stylesheet" type="text/css" 
                 href="/app/assets/css/menu.css"/>
 			<?php if(isset($styles)) echo $styles; ?>
