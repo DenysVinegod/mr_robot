@@ -31,24 +31,24 @@ body {
     margin: 0;
 }
 
+::-webkit-scrollbar {
+    width: 5px;
+}
+   
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+  
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
 .filler {
     flex-grow: 2;
 }
 
 .nowrap {
     white-space: nowrap;
-}
-
-.flex {
-    display: flex;
-}
-
-.flex_row {
-    flex-flow: row wrap;
-}
-
-.flex_space_around {
-    justify-content: space-around;
 }
 
 #page_wrapper {
@@ -117,7 +117,7 @@ body {
     transition: 200ms ease-in-out;
     background-color: white;
     border: 1px solid var(--main_dark);
-    padding: 5px;
+    padding: 0 5px 0;
 }
   
 .modal.active {
@@ -125,6 +125,10 @@ body {
 }
 
 .modal_header {
+    position: sticky;
+    top: 0px;
+    background-color: white;
+    z-index: 11;
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
@@ -180,9 +184,35 @@ body {
     margin-bottom: 20px;
 }
 
-#control_buttons {
+.modal fieldset.controll_buttons {
+    display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
+}
+
+.modal fieldset.controll_buttons .button {
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 1.2em;
+    color: var(--main_dark);
+    border: solid 1px transparent;
+    padding: 10px;
+    display: flex;justify-content: center;
+    align-items: center;
+}
+
+.modal fieldset.controll_buttons .button:hover {
+    border: solid 1px var(--main_dark);
+}
+
+.modal fieldset.controll_buttons .button:disabled {
+    color: rgb(99, 95, 95);
+    border: solid 1px transparent;
+}
+
+.modal fieldset.controll_buttons .button img {
+    height: 30px;
+    width: 30px;
 }
 
 #overlay {

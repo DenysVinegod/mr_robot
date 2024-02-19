@@ -9,6 +9,8 @@ function read_repair_details(repair_id) {
 }
 
 function fill_modal_editor(data) {
+    json_container = data;
+
     document.getElementById('editor_repair_id').innerHTML = data['id'];
 
     document.getElementById('repair_editor_surname').value = data['surname'];
@@ -51,7 +53,8 @@ function closeModal(modal) {
 
 function write_current_datetimer_to_value(node){
     var m = new Date();
-    var seconds = node.value.split(':');
+    if (node.value != '') var seconds = node.value.split(':'); 
+    else var seconds = ['', '', '00'];
     var dateString =
         m.getFullYear() + "-" +
         ("00" + (m.getMonth()+1)).slice(-2) + "-" +
@@ -102,8 +105,27 @@ function add_button_to_menu() {
     parrent_node.insertBefore(repair_menu, main_menu);
 }
 
+function sendData(data) {
+    var jsonData = JSON.stringify(data);
+
+    var form = document.createElement('form');
+    form.method = 'post';
+    form.action = '/app/views/templates/recipt_template.php';
+    form.target = '_blank';
+
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'recipt_data';
+    input.value = jsonData;
+
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
 const timer_chbox = this.document.getElementById('time_updater_chbox');
-var timer;
+var timer, json_container;
 
 window.addEventListener('load', function () {
     add_button_to_menu();
@@ -127,7 +149,7 @@ window.addEventListener('load', function () {
     });
 
     button_printer.addEventListener('click', ()=>{
-        console.log();
+        sendData(json_container);
     });
 
     button_new_repair_html.addEventListener('click', ()=>{

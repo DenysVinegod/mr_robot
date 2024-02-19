@@ -139,13 +139,9 @@ $controller -> model -> set_native_table("repairs");
                     value="<?php echo $_SERVER['REQUEST_URI']; ?>"
                     required>
             </fieldset>
-            <fieldset id="control_buttons">
-                <div id="reset">
-                    <input type="reset" value="Скинути">
-                </div>
-                <div id="submit">
-                    <input type="submit" value="Зберегти">
-                </div>
+            <fieldset class="controll_buttons">
+                <input type="reset" id="reset" class="button" value="Скинути">
+                <input type="submit" id="submit" class="button" value="Зберегти">
             </fieldset>
         </form>
     </div>
@@ -308,15 +304,15 @@ $controller -> model -> set_native_table("repairs");
                     value="<?php echo $_SERVER['REQUEST_URI']; ?>"
                     required>
             </fieldset>
-            <fieldset id="repair_editor_control_buttons">
-                <div id="submit_wrapper">
-                    <input type="submit" value="Зберегти">
-                </div>
-                <div id="print_recipt">
+            <fieldset class="controll_buttons">
+                <input type="submit" id="submit"  class="button" value="Зберегти">
+                <div id="print_recipt" class="button">
                     <img id="printer_button" src="/app/assets/images/style/printer_small.png">
                 </div>
             </fieldset>
         </form>
+    </div>
+    <div id="js_full_info_modal" style="display: none;">
     </div>
 </div>
 
