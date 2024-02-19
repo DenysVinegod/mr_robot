@@ -140,10 +140,10 @@ $controller -> model -> set_native_table("repairs");
                     required>
             </fieldset>
             <fieldset id="control_buttons">
-                <div id="reset_wrapper">
+                <div id="reset">
                     <input type="reset" value="Скинути">
                 </div>
-                <div id="submit_wrapper">
+                <div id="submit">
                     <input type="submit" value="Зберегти">
                 </div>
             </fieldset>
@@ -311,6 +311,9 @@ $controller -> model -> set_native_table("repairs");
             <fieldset id="repair_editor_control_buttons">
                 <div id="submit_wrapper">
                     <input type="submit" value="Зберегти">
+                </div>
+                <div id="print_recipt">
+                    <img id="printer_button" src="/app/assets/images/style/printer_small.png">
                 </div>
             </fieldset>
         </form>

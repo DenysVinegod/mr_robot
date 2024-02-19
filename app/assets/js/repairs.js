@@ -113,15 +113,21 @@ window.addEventListener('load', function () {
     const closeModalButtons = this.document.querySelectorAll('[data-close-button]');
     const list_elements = this.document.querySelectorAll('.list_line');
     const editor_all_inputs = this.document.querySelectorAll("#modal_repair_editor input, #modal_repair_editor select, #modal_repair_editor textarea");
+    const button_pencil = this.document.querySelector("#enable_editor");
+    const button_printer = this.document.querySelector("#print_recipt");
 
     editor_all_inputs.forEach(element => {
         element.disabled = true;
     });
 
-    this.document.querySelector("#enable_editor").addEventListener('click', ()=>{
+    button_pencil.addEventListener('click', ()=>{
         editor_all_inputs.forEach(element => {
             element.disabled = !element.disabled;
         });
+    });
+
+    button_printer.addEventListener('click', ()=>{
+        console.log();
     });
 
     button_new_repair_html.addEventListener('click', ()=>{

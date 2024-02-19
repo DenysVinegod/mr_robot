@@ -12,7 +12,7 @@
 
 html, body, #page_wrapper {
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 html {
@@ -37,6 +37,18 @@ body {
 
 .nowrap {
     white-space: nowrap;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex_row {
+    flex-flow: row wrap;
+}
+
+.flex_space_around {
+    justify-content: space-around;
 }
 
 #page_wrapper {
@@ -134,7 +146,7 @@ body {
     font-weight: bold;
 }
 
-.modal_header #enable_editor img{
+.modal_header img{
     height: 20px;
 }
 
@@ -171,29 +183,6 @@ body {
 #control_buttons {
     flex-flow: row wrap;
     justify-content: space-around;
-}
-
-.modal #submit_wrapper,
-.modal #reset_wrapper {
-    width: fit-content;
-    margin: 5px auto 0;
-    border: solid 1px var(--main_dark);
-}
-
-.modal input[type=submit],
-.modal input[type=reset] {
-    cursor: pointer;
-    font-size: 1.2em;
-    transition: 300ms ease-in-out;
-    background: none;
-    border: solid 1px var(--main_dark);
-    padding: 10px 5px 5px 10px;
-}
-
-.modal input[type=submit]:hover,
-.modal input[type=reset]:hover {
-    transform: translate(5px, 5px);
-    padding: 5px 10px 10px 5px;
 }
 
 #overlay {
