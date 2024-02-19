@@ -1,5 +1,5 @@
 <?php
-$scripts = '<script src="/app/assets/js/repairs.js" defer></script>';
+$scripts = '<script src="/app/assets/js/repairs.js?v=0.2" defer></script>';
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/views/layouts/_main_header.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/repair.php');
 

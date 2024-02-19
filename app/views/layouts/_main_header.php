@@ -16,15 +16,15 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
 			<link rel="shortcut icon" 
                 href="/app/assets/images/style/favicon-32.png" />
 			<link rel="stylesheet" type="text/css" 
-                href="/app/assets/css/main_style.css?v=0.0.2"/>
+                href="/app/assets/css/main_style.css?v=0.3"/>
             <link rel="stylesheet" type="text/css" 
-                href="/app/assets/css/menu.css"/>
+                href="/app/assets/css/menu.css?v0.1"/>
 			<?php if(isset($styles)) echo $styles; ?>
 			<link rel="stylesheet" type="text/css" 
 				href="/app/assets/css/media-queries.css" />
 
-			<script src="/app/assets/js/common_script.js" defer></script>
-            <script src="/app/assets/js/menu.js" defer></script>
+			<script src="/app/assets/js/common_script.js?v0.1" defer></script>
+            <script src="/app/assets/js/menu.js?v0.1" defer></script>
 			<?php if(isset($scripts)) echo $scripts; ?>
 
 			<title>mr. ROBOT</title>
