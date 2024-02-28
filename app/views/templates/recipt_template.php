@@ -1,6 +1,36 @@
 <?php
 $data = json_decode($_POST['recipt_data'], true);
-$data['id'] = str_pad($data['id'], 7, '0', STR_PAD_LEFT);
+$reverse_data_string = implode('', array_reverse(explode('-', explode(' ', $data["register_date"])[0])));
+$normalized_id = str_pad($data['id'], 4, '0', STR_PAD_LEFT);
+$code = $reverse_data_string . $normalized_id;
+
+// Перевірка довжини рядка
+if(strlen($code) == 12) {
+    // Додавання контрольної цифри
+    $code .= calculateEAN13CheckDigit($code);
+}
+
+// Функція для розрахунку контрольної цифри EAN-13
+function calculateEAN13CheckDigit($string) {
+    $odd_sum = 0;
+    $even_sum = 0;
+
+    // Розрахунок сум цифр за правилом EAN-13
+    for($i = 0; $i < strlen($string); $i++) {
+        if(($i % 2) == 0) {
+            $odd_sum += $string[$i];
+        } else {
+            $even_sum += $string[$i];
+        }
+    }
+
+    // Розрахунок контрольної цифри
+    $total_sum = $odd_sum + ($even_sum * 3);
+    $remainder = $total_sum % 10;
+    $check_digit = ($remainder == 0) ? 0 : (10 - $remainder);
+
+    return $check_digit;
+}
 
 $pageWidth = 58;
 $pageHeight = 180;
@@ -73,7 +103,7 @@ $html = "<head>
 $pdf -> writeHTML($html, false, false, true, false, '', false);
 
 // CODE 128 C
-$pdf->write1DBarcode($data['id'], 'EAN8', '12', '', '', 15, '', $style, 'N');
+$pdf->write1DBarcode($code, 'EAN13', '', '', '', 18, 0.4, $style, 'N');
 
 $pdf->Output('mr.ROBOT_recipt_'.$data['id'].'.pdf', 'I');
 
