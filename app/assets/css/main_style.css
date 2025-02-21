@@ -12,6 +12,7 @@
 
 html, body, #page_wrapper {
     height: 100%;
+    overflow-x: hidden;
 }
 
 html {
@@ -28,6 +29,18 @@ html {
 
 body {
     margin: 0;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+   
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+  
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
 }
 
 .filler {
@@ -47,21 +60,16 @@ body {
     background-color: var(--main_dark);
     display: flex;
     flex-flow: row nowrap;
+    padding: 0 10px;
 }
 
 #page_header #block_logo img {
     height: 70px;
-    margin: 5px 10px 0;
-}
-
-#page_header #menu_container {
-    display: flex;
-    align-items: center;
+    margin-top: 5px;
 }
 
 #page_body {
     flex-grow: 2;
-    margin: 10px;
     padding: 10px;
 }
 
@@ -70,48 +78,6 @@ body {
     border: solid 1px var(--main_dark);
     padding: 10px;
     text-align: center;
-}
-
-.additional_menu,
-#categories_menu {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-}
-
-.additional_menu .menu_button_wrapper,
-#categories_menu .card_button_wrapper{
-    border: solid 1px var(--main_dark);
-}
-
-.additional_menu .menu_button,
-#categories_menu .menu_button {
-    cursor: pointer;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    align-items: center;
-    transition: 300ms ease-in-out;
-    margin: -1px;
-    border: solid 1px var(--main_dark);
-    padding: 10px 5px 5px 10px;
-    text-decoration: none;
-}
-
-
-.additional_menu .menu_button:hover,
-#categories_menu .menu_button:hover {
-    transform: translate(5px, 5px);
-    padding: 5px 10px 10px 5px;
-}
-
-#categories_menu .menu_button img {
-    height: 100px;
-    width: 100px;
-}
-
-.additional_menu .menu_button img {
-    height: 30px;
 }
 
 .tooltip {
@@ -132,6 +98,10 @@ body {
     z-index: 1;
 }
 
+.tooltip .tooltip_down {
+    top: 55px;
+}
+
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
@@ -147,7 +117,7 @@ body {
     transition: 200ms ease-in-out;
     background-color: white;
     border: 1px solid var(--main_dark);
-    padding: 5px;
+    padding: 0 5px 0;
 }
   
 .modal.active {
@@ -155,6 +125,10 @@ body {
 }
 
 .modal_header {
+    position: sticky;
+    top: 0px;
+    background-color: white;
+    z-index: 11;
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
@@ -176,7 +150,7 @@ body {
     font-weight: bold;
 }
 
-.modal_header #enable_editor img{
+.modal_header img{
     height: 20px;
 }
 
@@ -210,31 +184,35 @@ body {
     margin-bottom: 20px;
 }
 
-#control_buttons {
+.modal fieldset.controll_buttons {
+    display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
 }
 
-.modal #submit_wrapper,
-.modal #reset_wrapper {
-    width: fit-content;
-    margin: 5px auto 0;
-    border: solid 1px var(--main_dark);
-}
-
-.modal input[type=submit],
-.modal input[type=reset] {
+.modal fieldset.controll_buttons .button {
     cursor: pointer;
+    background-color: transparent;
     font-size: 1.2em;
-    transition: 300ms ease-in-out;
-    border: solid 1px var(--main_dark);
-    padding: 10px 5px 5px 10px;
+    color: var(--main_dark);
+    border: solid 1px transparent;
+    padding: 10px;
+    display: flex;justify-content: center;
+    align-items: center;
 }
 
-.modal input[type=submit]:hover,
-.modal input[type=reset]:hover {
-    transform: translate(5px, 5px);
-    padding: 5px 10px 10px 5px;
+.modal fieldset.controll_buttons .button:hover {
+    border: solid 1px var(--main_dark);
+}
+
+.modal fieldset.controll_buttons .button:disabled {
+    color: rgb(99, 95, 95);
+    border: solid 1px transparent;
+}
+
+.modal fieldset.controll_buttons .button img {
+    height: 30px;
+    width: 30px;
 }
 
 #overlay {
@@ -286,4 +264,6 @@ td {
 #page_footer {
     display: flex;
     justify-content: center;
+    padding: 10px;
+    border-top: solid 1px black;
 }

@@ -1,31 +1,11 @@
 <?php
-$scripts = '<script src="/app/assets/js/repairs.js" defer></script>';
+$scripts = '<script src="/app/assets/js/repairs.js?v=0.2" defer></script>';
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/views/layouts/_main_header.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/repair.php');
 
 $controller = new Repair();
 $controller -> model -> set_native_table("repairs");
 ?>
-
-<nav class="additional_menu">
-    <div class="menu_button_wrapper">
-        <a id="button_back" 
-            class='tooltip menu_button' 
-            href="/">
-            <img src='/app/assets/images/style/log_out_black.png'>
-            <span class='tooltiptext'>Назад</span>
-        </a>
-    </div>
-    <div class="filler"></div>
-    <div class="menu_button_wrapper">
-        <div id="new_repair" 
-            class='tooltip menu_button' 
-            data-modal-target='#modal_editor'>
-            <img src='/app/assets/images/style/new_page.png'>
-            <span class='tooltiptext'>Створити</span>
-        </div>
-    </div>
-</nav>
 
 <div id="modal_new_repair_editor" class="modal">
     <div class="modal_header">
@@ -159,13 +139,9 @@ $controller -> model -> set_native_table("repairs");
                     value="<?php echo $_SERVER['REQUEST_URI']; ?>"
                     required>
             </fieldset>
-            <fieldset id="control_buttons">
-                <div id="reset_wrapper">
-                    <input type="reset" value="Скинути">
-                </div>
-                <div id="submit_wrapper">
-                    <input type="submit" value="Зберегти">
-                </div>
+            <fieldset class="controll_buttons">
+                <input type="reset" id="reset" class="button" value="Скинути">
+                <input type="submit" id="submit" class="button" value="Зберегти">
             </fieldset>
         </form>
     </div>
@@ -257,6 +233,8 @@ $controller -> model -> set_native_table("repairs");
             </fieldset>
             <fieldset>
                 <legend>Дані про замовлення:</legend>
+                <label for="editor_status">
+                    Статус замовлення</label>
                 <select id="editor_status" 
                     name="status" 
                     class="editor_input">
@@ -326,16 +304,17 @@ $controller -> model -> set_native_table("repairs");
                     value="<?php echo $_SERVER['REQUEST_URI']; ?>"
                     required>
             </fieldset>
-            <fieldset id="repair_editor_control_buttons">
-                <div id="submit_wrapper">
-                    <input type="submit" value="Зберегти">
+            <fieldset class="controll_buttons">
+                <input type="submit" id="submit"  class="button" value="Зберегти">
+                <div id="print_recipt" class="button">
+                    <img id="printer_button" src="/app/assets/images/style/printer_small.png">
                 </div>
             </fieldset>
         </form>
     </div>
+    <div id="js_full_info_modal" style="display: none;">
+    </div>
 </div>
-
-<div id="overlay"></div>
 
 <div class="repairs_table_container">
     <table id="repairs_list">

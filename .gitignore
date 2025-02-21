@@ -6,6 +6,17 @@ configs/*.conf
 configs/*.inc
 configs/*.php
 
+# Composer
+# vendor/
+# !vendor/vinegod # not including
+vendor/composer
+vendor/tecnickcom
+vendor/autoload.php
+composer.lock
+vendor-bin/
+
+.env
+
 # But indexing gitignore & other
 !.gitignore
 !*.example

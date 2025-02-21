@@ -5,9 +5,8 @@ class Repairs extends ModelsBase {
     /**
      * @return bool false if input array invalid
      */
-    function save_new_repair(array $data): bool{
-        if ((isset($data['id']))
-        && (isset($data['status_id']))
+    function save_new_repair(array $data): int{
+        if ((isset($data['status_id']))
         && (isset($data['client_id'])) 
         && (isset($data['contact_id'])) 
         && (isset($data['device_id'])) 
@@ -15,7 +14,7 @@ class Repairs extends ModelsBase {
         && (isset($data['price'])) 
         && (isset($data['manager_id'])) 
         && (isset($data['register_date']))) {
-            $query = "INSERT INTO `repairs`(
+            $query1 = "INSERT INTO `repairs`(
                 `status_id`, 
                 `client_id`, 
                 `contact_id`, 
@@ -33,10 +32,25 @@ class Repairs extends ModelsBase {
                     '{$data['manager_id']}', 
                     '{$data['register_date']}'
                 );";
+            $query2 = "SELECT `id` FROM `repairs` WHERE 
+                `status_id`     = '{$data['status_id']}'    AND 
+                `client_id`     = '{$data['client_id']}'    AND 
+                `contact_id`    = '{$data['contact_id']}'   AND 
+                `device_id`     = '{$data['device_id']}'    AND 
+                `description`   = '{$data['description']}'  AND 
+                `price`         = '{$data['price']}'        AND 
+                `manager_id`    = '{$data['manager_id']}'   AND 
+                `register_date` = '{$data['register_date']}'
+            ;";
+            
             $this -> connect_to_db();
-            $result = $this -> connection -> query($query);
+            $this -> connection -> query($query1);
+            $result = $this -> connection -> query($query2);
             $this -> close();
-            return true;
+            
+            $array = $result -> fetch_assoc();
+
+            return $array['id'];
         } else return false;
     }
 
