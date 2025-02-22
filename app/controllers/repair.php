@@ -7,68 +7,49 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/devices.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/statuses.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/contacts.php');
 
-include ($_SERVER['DOCUMENT_ROOT'].'/configs/db.php');
-
-$model_repairs 
-    = isset($params_database_main) 
-    ? new Repairs($params_database_main) 
-    : new Repairs();
-
-$model_clients 
-    = isset($params_database_main) 
-    ? new Clients($params_database_main) 
-    : new Clients();
-
-$model_contacts 
-    = isset($params_database_main) 
-    ? new Contacts($params_database_main) 
-    : new Contacts();
-
-$model_devices 
-    = isset($params_database_main) 
-    ? new Devices($params_database_main) 
-    : new Devices();
-$model_statuses 
-    = isset($params_database_main) 
-    ? new Statuses($params_database_main) 
-    : new Statuses();
+$model_repairs  = new Repairs();
+$model_clients  = new Clients();
+$model_contacts = new Contacts();
+$model_devices  = new Devices();
+$model_statuses = new Statuses();
 
 class Repair {
+    public $model;
+    
     function __construct() {
         global $model_repairs;
         $this -> model = $model_repairs;
     }
 
     function render_html_rows(): void{
-        $result = $this -> model -> list_repairs();
+        $repairs = $this -> model -> list_repairs();
         $row_counter = 1;
-        foreach ($result as $value) {
-            if ($row_counter % 2 == 0) echo "<tr id='repair_{$value['id']}' class='even list_line'>"; 
-            else echo "<tr id='repair_{$value['id']}' class='odd list_line'>";
-            echo "<td>".$value['id']."</td>";
-            echo "<td>".$value['status']."</td>";
+        foreach ($repairs as $repair) {
+            $class_line = $row_counter++ % 2 == 0 ? 'even' : 'odd';
+            echo "<tr id='repair_{$repair['id']}' class='{$class_line} list_line'>";
+            echo "<td>".$repair['id']."</td>";
+            echo "<td>".$repair['status']."</td>";
             echo "<td>"
-                .$value['surname']
+                .$repair['surname']
                 ." "
-                .$value['first_name']
+                .$repair['first_name']
                 ." "
-                .$value['last_name']
+                .$repair['last_name']
                 ."</td>";
             echo "<td>"
-                .$value['contact_type']
-                .": ".$value['contact']
+                .$repair['contact_type']
+                .": ".$repair['contact']
                 ."</td>";
-            echo "<td>".$value['device_name']."</td>";
-            echo "<td>".$value['description']."</td>";
-            echo "<td>".$value['price']."</td>";
-            echo "<td>".$value['master_conclusion']."</td>";
-            echo "<td>".$value['register_date']."</td>";
-            echo "<td>".$value['done_date']."</td>";
+            echo "<td>".$repair['device_name']."</td>";
+            echo "<td>".$repair['description']."</td>";
+            echo "<td>".$repair['price']."</td>";
+            echo "<td>".$repair['master_conclusion']."</td>";
+            echo "<td>".$repair['register_date']."</td>";
+            echo "<td>".$repair['done_date']."</td>";
             echo "<td class='js_full_info' style='display: none;'>"
-                .json_encode($value)
+                .json_encode($repair)
                 ."</td>";
             echo "</tr>";
-            $row_counter++;
         }
     }
 }
@@ -78,7 +59,7 @@ if (isset($_POST['action'])) {
         case 'create_new_repair':
             if (!$model_clients -> get_client_id($_POST)) {
                 $model_clients -> save_new_user($_POST);
-                $_SESSION['message']['info'] = "Створено нового клієнта у БД.";
+                $_SESSION['message']['info'] = "Створено нового клієнта у базі.";
             }
             $_POST['client_id'] = $model_clients -> get_client_id($_POST);
             if (!$model_contacts -> get_contact_id($_POST)) {

@@ -1,15 +1,10 @@
 <?php
 if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
 
-require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/authentication.php');
-include ($_SERVER['DOCUMENT_ROOT'].'/configs/db.php');
+require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/users.php');
 
-$model 
-    = isset($params_database_main) 
-    ? new Authentication($params_database_main) 
-    : new Authentication();
+$model = new Users();
 
-// $model -> show_params_html();
 if (sizeof($_POST)) {
     if (!isset($_POST['user_login'])) {
         $_SESSION['message']['warning'] = "Login needed, asshole!";

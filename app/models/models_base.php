@@ -1,23 +1,38 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'].'/configs/db.php';
+
 /**
  * funcs: connect_to_db(), function close(), clear_input($data), 
  * show_params_html()
  */
 class ModelsBase {
-    protected $connection;
-    
     protected $dbparams;
+    protected $connection;
+    protected $native_table;
     
-    function __construct($params_a = array(
-        'dbhost' => 'localhost',
-        'dbuser' => 'mr_robot', 
-        'dbpass' => 'ip$Hone123',
-        'dbname' => 'mr_robot'
-        )) {
-            $this -> dbparams['host'] = $params_a['dbhost'];
-		    $this -> dbparams['user'] = $params_a['dbuser'];
-		    $this -> dbparams['pass'] = $params_a['dbpass'];
-		    $this -> dbparams['name'] = $params_a['dbname'];
+    function __construct(string $db_conf_name = 'main') {
+        global $configs_db;
+        // Exeptions needed because of errors in this case are not informative
+        $error_start = "Database '";
+        $error_end = "' configuration not found";
+        if (!isset($configs_db[$db_conf_name])) {
+            throw new Exception($error_start.$db_conf_name.$error_end);
+        } else {
+            if (!isset($configs_db[$db_conf_name]['dbhost'])) {
+                throw new Exception($error_start.$db_conf_name.'->dbhost'.$error_end);
+            } elseif (!isset($configs_db[$db_conf_name]['dbuser'])) {
+                throw new Exception($error_start.$db_conf_name.'->dbuser'.$error_end);
+            } elseif (!isset($configs_db[$db_conf_name]['dbpass'])) {
+                throw new Exception($error_start.$db_conf_name.'->dbpass'.$error_end);
+            } elseif (!isset($configs_db[$db_conf_name]['dbname'])) {
+                throw new Exception($error_start.$db_conf_name.'->dbname'.$error_end);
+            } else {
+                $this -> dbparams['host'] = $configs_db[$db_conf_name]['dbhost'];
+                $this -> dbparams['user'] = $configs_db[$db_conf_name]['dbuser'];
+                $this -> dbparams['pass'] = $configs_db[$db_conf_name]['dbpass'];
+                $this -> dbparams['name'] = $configs_db[$db_conf_name]['dbname'];
+            }
+        }
     }
 
     protected function connect_to_db(): void{

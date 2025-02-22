@@ -57,6 +57,7 @@ nav.main_menu .main_menu_item:hover {
 #main_menu_window #items_container .item a {
     display: flex;
     flex-flow: column nowrap;
+    align-items: center;
     justify-content: center;
     text-decoration: none;
     color: white;
@@ -65,6 +66,7 @@ nav.main_menu .main_menu_item:hover {
 
 #main_menu_window #items_container .item a img {
     height: 60px;
+    width: 60px;
     padding: 10px;
     border: 0;
     border-radius: 50%;

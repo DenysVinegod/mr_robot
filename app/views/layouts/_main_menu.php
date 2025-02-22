@@ -1,23 +1,4 @@
-<?php
-$menu_items = [
-    [   // repairs
-        'id'        => 'item_repairs',
-        'label'     => 'Ремонти',
-        'img_path'  => '/app/assets/images/style/repair.png',
-        'type'      => 'tag_a',
-        'action'    => '/app/views/repairs.php',
-        'category'  => 'apps'
-    ],
-    [   // logout
-        'id'        => 'item_logout',
-        'label'     => 'Вихід',
-        'img_path'  => '/app/assets/images/style/log_out.png',
-        'type'      => 'tag_a',
-        'action'    => '?account_action=logout',
-        'category'  => 'account'
-    ]
-];
-?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'].'/app/helpers/_main_menu_items.php'; ?>
 
 <nav class="main_menu">
     <div id="apps_menu" class="main_menu_item">
