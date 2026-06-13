@@ -6,8 +6,22 @@ class Devices extends ModelsBase {
      * @return int id of user or int(0) if user not found or input data invalid
      */
     function get_device_id(array $data): int{
+        if (isset($data['device_id'])) {
+            if (intval($data['device_id']) > 0) {
+                return intval($data['device_id']);
+            }
+            if ($data['device_id'] === 'new') {
+                return 0;
+            }
+        }
+
         if ((isset($data['device_type_id'])) 
         && (isset($data['client_id']))) {
+            $device_description = isset($data['device_description']) ? trim($data['device_description']) : '';
+            if ($device_description !== '') {
+                return 0;
+            }
+
             $query = "SELECT `id` FROM `devices` 
                 WHERE 
                 `type_id` = '{$this -> clear_input($data['device_type_id'])}' 
@@ -28,15 +42,27 @@ class Devices extends ModelsBase {
      */
     function save_new_device(array $data): bool{
         if ((isset($data['device_type_id'])) 
-        && (isset($data['client_id']))) {
-            $description = isset($data['description']) ? $this->clear_input($data['description']) : '';
+            && (isset($data['client_id']))) {
+            $description = isset($data['device_description']) ? $this->clear_input($data['device_description']) : '';
+            $color = isset($data['device_color']) ? $this->clear_input($data['device_color']) : '';
+            $cosmetic_condition = isset($data['device_cosmetic_condition']) ? $this->clear_input($data['device_cosmetic_condition']) : '';
+            $serial_number = isset($data['device_serial_number']) ? $this->clear_input($data['device_serial_number']) : '';
+            $equipment = isset($data['device_equipment']) ? $this->clear_input($data['device_equipment']) : '';
             $query = "INSERT INTO `devices`(
                 `type_id`, 
                 `client_id`,
-                `description`) VALUES (
+                `description`,
+                `color`,
+                `cosmetic_condition`,
+                `serial_number`,
+                `equipment`) VALUES (
                     '{$data['device_type_id']}',
                     '{$data['client_id']}',
-                    '{$description}'
+                    '{$description}',
+                    '{$color}',
+                    '{$cosmetic_condition}',
+                    '{$serial_number}',
+                    '{$equipment}'
                 );";
             $this -> connect_to_db();
             $result = $this -> connection -> query($query);

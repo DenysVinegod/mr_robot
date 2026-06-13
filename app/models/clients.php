@@ -28,6 +28,10 @@ class Clients extends ModelsBase {
      * @return int id of user or int(0) if user not found or input data invalid
      */
     function get_client_id(array $data): int{
+        if (isset($data['client_id']) && intval($data['client_id']) > 0) {
+            return intval($data['client_id']);
+        }
+
         if ((isset($data['first_name'])) 
             && (isset($data['surname'])) 
             && (isset($data['last_name']))) {

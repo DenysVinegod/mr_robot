@@ -6,6 +6,10 @@ class Contacts extends ModelsBase {
      * @return int id of user or int(0) if user not found or input data invalid
      */
     function get_contact_id(array $data): int{
+        if (isset($data['contact_id']) && intval($data['contact_id']) > 0) {
+            return intval($data['contact_id']);
+        }
+
         if ((isset($data['contact_type_id'])) 
         && (isset($data['client_id']))
         && (isset($data['contact']))) {

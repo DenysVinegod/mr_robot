@@ -39,11 +39,51 @@ class Repair {
         $this -> model = $model_repairs;
     }
 
-    private function build_page_url(int $page): string {
+    public function build_query_url(array $overrides = []): string {
         $base_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
-        $query['page'] = $page;
+        foreach ($overrides as $key => $value) {
+            if ($value === null) {
+                unset($query[$key]);
+            } else {
+                $query[$key] = $value;
+            }
+        }
         return $base_path . '?' . http_build_query($query);
+    }
+
+    private function build_page_url(int $page): string {
+        return $this->build_query_url(['page' => $page]);
+    }
+
+    function get_statuses(): array {
+        global $model_statuses;
+        return $model_statuses->list_elements('statuses');
+    }
+
+    function get_sortable_columns(): array {
+        return [
+            'id' => '№',
+            'status' => 'Статус',
+            'surname' => 'ПІБ',
+            'contact_type' => 'Контакти',
+            'device_name' => 'Пристрій',
+            'description' => 'Причина звернення',
+            'price' => 'Вартість',
+            'master_conclusion' => 'Коментар майстра',
+            'register_date' => 'Дата прийому',
+            'done_date' => 'Дата видачі',
+        ];
+    }
+
+    function sanitize_sort_by(string $sort_by): string {
+        $allowed = array_keys($this->get_sortable_columns());
+        return in_array($sort_by, $allowed, true) ? $sort_by : 'register_date';
+    }
+
+    function sanitize_sort_dir(string $sort_dir): string {
+        $sort_dir = strtoupper($sort_dir);
+        return in_array($sort_dir, ['ASC', 'DESC'], true) ? $sort_dir : 'DESC';
     }
 
     private function get_status_row_class(string $status): string {
@@ -71,18 +111,18 @@ class Repair {
         return $role === 'superadmin';
     }
 
-    function get_total_pages(int $perPage): int {
-        $count = $this -> model -> count_repairs();
+    function get_total_pages(int $perPage, int $status_id = 0): int {
+        $count = $this->model->count_repairs($status_id);
         return max(1, (int) ceil($count / $perPage));
     }
 
-    function render_html_rows(int $page = 1, int $perPage = 0): void{
+    function render_html_rows(int $page = 1, int $perPage = 0, int $status_id = 0, string $sort_by = 'register_date', string $sort_dir = 'DESC'): void{
         $offset = 0;
         if ($perPage > 0) {
             $offset = ($page - 1) * $perPage;
         }
 
-        $result = $this -> model -> list_repairs('all', $perPage, $offset);
+        $result = $this->model->list_repairs($status_id, $perPage, $offset, $sort_by, $sort_dir);
         $row_counter = 1;
         foreach ($result as $value) {
             $status_class = $this -> get_status_row_class($value['status']);
@@ -104,7 +144,21 @@ class Repair {
                 .$value['contact_type']
                 .": ".$value['contact']
                 ."</td>";
-            echo "<td>".$value['device_name']."</td>";
+            $device_display = $value['device_name'];
+            $device_attrs = [];
+            if (!empty($value['device_color'])) {
+                $device_attrs[] = $value['device_color'];
+            }
+            if (!empty($value['device_serial_number'])) {
+                $device_attrs[] = 'SN: ' . $value['device_serial_number'];
+            }
+            if (!empty($value['device_cosmetic_condition'])) {
+                $device_attrs[] = $value['device_cosmetic_condition'];
+            }
+            if (count($device_attrs) > 0) {
+                $device_display .= ' [' . implode(', ', $device_attrs) . ']';
+            }
+            echo "<td>".$device_display."</td>";
             echo "<td>".$value['description']."</td>";
             echo "<td>".$value['price']."</td>";
             echo "<td>".$value['master_conclusion']."</td>";
@@ -118,8 +172,8 @@ class Repair {
         }
     }
 
-    function render_pagination(int $page, int $perPage): void {
-        $total_pages = $this -> get_total_pages($perPage);
+    function render_pagination(int $page, int $perPage, int $status_id = 0, string $sort_by = 'register_date', string $sort_dir = 'DESC'): void {
+        $total_pages = $this->get_total_pages($perPage, $status_id);
         if ($total_pages <= 1) return;
 
         echo "<div class='pagination_container'><nav class='pagination'>";

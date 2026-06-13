@@ -108,7 +108,7 @@ class Repairs extends ModelsBase {
         return null;
     }
 
-    function count_repairs(string $status='all'): int {
+    function count_repairs(int $status_id = 0): int {
         $query = "SELECT COUNT(*) AS `count` FROM `repairs`
             INNER JOIN `statuses`
                 ON `repairs`.`status_id` = `statuses`.`id`
@@ -119,6 +119,10 @@ class Repairs extends ModelsBase {
             INNER JOIN `devices`
                 ON `repairs`.`device_id` = `devices`.`id`";
 
+        if ($status_id > 0) {
+            $query .= " WHERE `repairs`.`status_id` = '{$status_id}'";
+        }
+
         $this -> connect_to_db();
         $result = $this -> connection -> query($query);
         $this -> close();
@@ -126,7 +130,7 @@ class Repairs extends ModelsBase {
         return intval($row['count']);
     }
 
-    function list_repairs(string $status='all', int $limit = 0, int $offset = 0): array{
+    function list_repairs(int $status_id = 0, int $limit = 0, int $offset = 0, string $sort_by = 'register_date', string $sort_dir = 'DESC'): array{
         $array = array();
         $query = "SELECT 
             `repairs`.`id`, 
@@ -138,6 +142,11 @@ class Repairs extends ModelsBase {
             `contact_types`.`name` AS `contact_type`, 
             `contacts`.`contact`, 
             `device_types`.`name` AS `device_name`, 
+            `devices`.`description` AS `device_description`,
+            `devices`.`color` AS `device_color`,
+            `devices`.`cosmetic_condition` AS `device_cosmetic_condition`,
+            `devices`.`serial_number` AS `device_serial_number`,
+            `devices`.`equipment` AS `device_equipment`,
             `repairs`.`description`, 
             `repairs`.`price`, 
             `repairs`.`master_conclusion`, 
@@ -160,8 +169,33 @@ class Repairs extends ModelsBase {
             INNER JOIN `devices`
                 ON `repairs`.`device_id` = `devices`.`id`
             INNER JOIN `device_types`
-                ON `devices`.`type_id` = `device_types`.`id`
-            ORDER BY `repairs`.`register_date` DESC";
+                ON `devices`.`type_id` = `device_types`.`id`";
+
+        if ($status_id > 0) {
+            $query .= " WHERE `repairs`.`status_id` = '{$status_id}'";
+        }
+
+        $allowed_sort_columns = [
+            'id',
+            'status',
+            'surname',
+            'first_name',
+            'last_name',
+            'contact_type',
+            'contact',
+            'device_name',
+            'description',
+            'price',
+            'master_conclusion',
+            'register_date',
+            'done_date'
+        ];
+        $sort_by = in_array($sort_by, $allowed_sort_columns, true) ? $sort_by : 'register_date';
+        $sort_dir = strtoupper($sort_dir);
+        if (!in_array($sort_dir, ['ASC', 'DESC'], true)) {
+            $sort_dir = 'DESC';
+        }
+        $query .= " ORDER BY `{$sort_by}` {$sort_dir}";
 
         if ($limit > 0) {
             $query .= " LIMIT {$limit} OFFSET {$offset}";
