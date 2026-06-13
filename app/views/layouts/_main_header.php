@@ -31,8 +31,7 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/access.php');
         </head>
 		<body>
             <!-- Links image -->
-			<img src="/app/assets/images/style/logo_brown.png" 
-                style="display: none;">
+			<img src="/app/assets/images/style/logo_brown.png" class="hidden">
             <div id="page_wrapper">
                 <div id="page_header">
                     <div id="block_logo">

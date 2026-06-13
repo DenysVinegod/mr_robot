@@ -1,10 +1,16 @@
 <?php
-$scripts = '<script src="/app/assets/js/repairs.js?v=0.2" defer></script>';
+$current_role = $_SESSION['account']['role_name'] ?? null;
+$current_role_js = htmlspecialchars($current_role ?? '', ENT_QUOTES, 'UTF-8');
+$scripts = '<script src="/app/assets/js/repairs.js?v=0.2" defer></script>' .
+           "<script>window.currentRole = '" . $current_role_js . "';</script>";
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/views/layouts/_main_header.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/repair.php');
 
 $controller = new Repair();
 $controller -> model -> set_native_table("repairs");
+
+$current_role = $_SESSION['account']['role_name'] ?? null;
+$current_role_js = htmlspecialchars($current_role ?? '', ENT_QUOTES, 'UTF-8');
 
 $per_page = 10;
 $page = isset($_GET['page']) && intval($_GET['page']) > 0 ? intval($_GET['page']) : 1;
@@ -257,7 +263,7 @@ $page = max(1, min($page, $controller -> get_total_pages($per_page)));
                 <input id="repair_editor_registered_datetime" 
                     class="editor_input"
                     name="register_date" 
-                    type="datetime"
+                    type="datetime-local"
                     required>
                 <label for="repair_editor_problem_description">
                     Причина звернення/коментар</label>
@@ -287,8 +293,7 @@ $page = max(1, min($page, $controller -> get_total_pages($per_page)));
                     cols="35"
                     placeholder="Поломка/Коментар майстра"></textarea>
             </fieldset>
-            <fieldset id="repair_editor_additional_fieldset" 
-                style="display: none;">
+            <fieldset id="repair_editor_additional_fieldset" class="hidden">
                 <input id="repair_editor_id" 
                     type="text"
                     name="id"
@@ -302,6 +307,10 @@ $page = max(1, min($page, $controller -> get_total_pages($per_page)));
                     type="text" 
                     value="<?php echo $_SESSION['account']['id']; ?>"
                     required>
+                <input id="repair_editor_original_status_id"
+                    name="original_status_id"
+                    type="hidden"
+                    value="0">
                 <input id="repair_editor_back_path" 
                     name="back_path"
                     type="text" 
@@ -316,7 +325,7 @@ $page = max(1, min($page, $controller -> get_total_pages($per_page)));
             </fieldset>
         </form>
     </div>
-    <div id="js_full_info_modal" style="display: none;">
+    <div id="js_full_info_modal" class="hidden">
     </div>
 </div>
 

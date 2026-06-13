@@ -13,6 +13,19 @@ $message['auth']['need_auth']       = 'Необхідна аутентифіка
 $message['auth']['access_denyed']   = 'Аутентифікуйтеся щоб отримати доступ!';
 $message['auth']['failed']          = 'Проблеми із входом у систему!';
 
+/**
+ * Check if current user has any of allowed roles.
+ * @param array $allowed array of role names
+ * @return bool
+ */
+function user_has_role(array $allowed): bool {
+    if (!isset($_SESSION['account']) || !isset($_SESSION['account']['role_name'])) return false;
+    $role = $_SESSION['account']['role_name'];
+    if (!$role) return false;
+    if (in_array('superadmin', $allowed) && $role === 'superadmin') return true;
+    return in_array($role, $allowed);
+}
+
 if (isset($_SESSION['account'])) {
     if (isset($_SESSION['account']['status'])) {
         switch ($_SESSION['account']['status']) {

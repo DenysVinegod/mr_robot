@@ -41,8 +41,8 @@ class Clients extends ModelsBase {
             $result = $this -> connection -> query($query);
             $this -> close();
             if ($result -> num_rows) {
-                $result = $result -> fetch_column();
-                return $result;
+                $row = $result -> fetch_assoc();
+                return intval($row['id']);
             } else return 0;
         } else return 0;
     }

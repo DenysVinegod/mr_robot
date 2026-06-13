@@ -17,8 +17,8 @@ class Devices extends ModelsBase {
             $result = $this -> connection -> query($query);
             $this -> close();
             if ($result -> num_rows) {
-                $result = $result -> fetch_column();
-                return $result;
+                $row = $result -> fetch_assoc();
+                return intval($row['id']);
             } else return 0;
         } else return 0;
     }
@@ -29,11 +29,14 @@ class Devices extends ModelsBase {
     function save_new_device(array $data): bool{
         if ((isset($data['device_type_id'])) 
         && (isset($data['client_id']))) {
+            $description = isset($data['description']) ? $this->clear_input($data['description']) : '';
             $query = "INSERT INTO `devices`(
                 `type_id`, 
-                `client_id`) VALUES (
+                `client_id`,
+                `description`) VALUES (
                     '{$data['device_type_id']}',
-                    '{$data['client_id']}'
+                    '{$data['client_id']}',
+                    '{$description}'
                 );";
             $this -> connect_to_db();
             $result = $this -> connection -> query($query);

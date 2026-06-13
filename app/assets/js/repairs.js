@@ -8,6 +8,48 @@ function read_repair_details(repair_id) {
     return json_container;
 }
 
+function getAllowedStatusesForEditor(currentStatusName) {
+    if (window.currentRole === 'superadmin') {
+        return [
+            'Нове замовлення',
+            'Діагностика',
+            'Очікує узгодження',
+            'Узгоджено',
+            'Скасовано',
+            'Відмовлено',
+            'Виконано',
+            'Видано',
+            'Видано без ремонту'
+        ];
+    }
+
+    if (window.currentRole === 'master') {
+        switch (currentStatusName) {
+            case 'Нове замовлення':
+                return ['Нове замовлення', 'Діагностика'];
+            case 'Діагностика':
+                return ['Діагностика', 'Очікує узгодження', 'Відмовлено'];
+            case 'Узгоджено':
+                return ['Узгоджено', 'Виконано', 'Скасовано'];
+            default:
+                return [currentStatusName];
+        }
+    }
+
+    if (window.currentRole === 'reception') {
+        switch (currentStatusName) {
+            case 'Очікує узгодження':
+                return ['Очікує узгодження', 'Узгоджено', 'Скасовано'];
+            case 'Виконано':
+                return ['Виконано', 'Видано', 'Видано без ремонту'];
+            default:
+                return [currentStatusName];
+        }
+    }
+
+    return [currentStatusName];
+}
+
 function fill_modal_editor(data) {
     json_container = data;
 
@@ -25,15 +67,60 @@ function fill_modal_editor(data) {
 
     document.getElementById('repair_editor_device_type').value 
         = data['device_type_id'];
-    
-    document.getElementById('editor_status').value = data['status_id'];
+
+    const statusSelect = document.getElementById('editor_status');
+    const statusValue = data['status_id'];
+    const currentStatusName = data['status'];
+
+    const allowedStatusNames = getAllowedStatusesForEditor(currentStatusName);
+    const existingOptions = Array.from(statusSelect.options).reduce((map, option) => {
+        map[option.text.trim()] = option.value;
+        return map;
+    }, {});
+
+    statusSelect.innerHTML = '';
+
+    allowedStatusNames.forEach(statusName => {
+        if (existingOptions[statusName]) {
+            const option = document.createElement('option');
+            option.value = existingOptions[statusName];
+            option.text = statusName;
+            statusSelect.appendChild(option);
+            return;
+        }
+
+        const option = document.createElement('option');
+        option.value = '';
+        option.text = statusName;
+        statusSelect.appendChild(option);
+    });
+
+    if (statusValue.toString() !== '') {
+        const foundOption = Array.from(statusSelect.options).find(option => option.value === statusValue.toString());
+        if (foundOption) {
+            statusSelect.value = statusValue;
+        } else {
+            const customStatus = document.createElement('option');
+            customStatus.value = statusValue;
+            customStatus.text = currentStatusName;
+            customStatus.selected = true;
+            statusSelect.appendChild(customStatus);
+        }
+    }
+
+    let registerDateValue = data['register_date'];
+    if (registerDateValue && registerDateValue.indexOf(' ') !== -1) {
+        registerDateValue = registerDateValue.replace(' ', 'T');
+    }
     document.getElementById('repair_editor_registered_datetime').value 
-        = data['register_date'];
+        = registerDateValue;
     document.getElementById('repair_editor_problem_description').value 
         = data['description'];
     document.getElementById('repair_editor_price').value = data['price'];
     document.getElementById('repair_editor_master_conclusion').value 
         = data['master_conclusion'];
+    document.getElementById('repair_editor_original_status_id').value 
+        = data['status_id'];
     
     document.getElementById('repair_editor_id').value 
         = data['id'];

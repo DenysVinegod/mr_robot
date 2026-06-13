@@ -63,6 +63,49 @@ class Repair {
         }
     }
 
+    private function get_allowed_status_transitions(string $role): array {
+        switch ($role) {
+            case 'master':
+                return [
+                    'Нове замовлення' => ['Діагностика'],
+                    'Діагностика' => ['Очікує узгодження', 'Відмовлено'],
+                    'Узгоджено' => ['Виконано', 'Скасовано'],
+                ];
+            case 'reception':
+                return [
+                    'Очікує узгодження' => ['Узгоджено', 'Скасовано'],
+                    'Виконано' => ['Видано', 'Видано без ремонту'],
+                ];
+            default:
+                return [];
+        }
+    }
+
+    private function is_status_change_allowed(int $desired_status_id, int $original_status_id, string $role): bool {
+        if ($role === 'superadmin') {
+            return true;
+        }
+
+        if ($desired_status_id === $original_status_id && $original_status_id > 0) {
+            return true;
+        }
+
+        global $model_statuses;
+        $desired_status_name = $model_statuses->get_name_by_id($desired_status_id);
+        $original_status_name = $model_statuses->get_name_by_id($original_status_id);
+
+        if ($desired_status_name === null || $original_status_name === null) {
+            return false;
+        }
+
+        $transitions = $this->get_allowed_status_transitions($role);
+        if (!isset($transitions[$original_status_name])) {
+            return false;
+        }
+
+        return in_array($desired_status_name, $transitions[$original_status_name], true);
+    }
+
     function get_total_pages(int $perPage): int {
         $count = $this -> model -> count_repairs();
         return max(1, (int) ceil($count / $perPage));
@@ -132,8 +175,17 @@ class Repair {
 }
 
 if (isset($_POST['action'])) {
+    // determine current role name (if any)
+    $current_role = $_SESSION['account']['role_name'] ?? null;
     switch ($_POST['action']) {
         case 'create_new_repair':
+            // only reception and superadmin can create new repairs
+            if (!in_array($current_role, ['superadmin','reception'])) {
+                $_SESSION['message']['error'] = 'Недостатньо прав для створення заявки.';
+                header('Location: /');
+                exit();
+            }
+            $_POST['status_id'] = $model_statuses->get_id_by_name('Нове замовлення');
             if (!$model_clients -> get_client_id($_POST)) {
                 $model_clients -> save_new_user($_POST);
                 $_SESSION['message']['info'] = "Створено нового клієнта у БД.";
@@ -175,6 +227,31 @@ if (isset($_POST['action'])) {
         case 'edit_repair':
             $_POST['status_id'] = $_POST['status'];
             unset($_POST['status']);
+            $original_status_id = intval($_POST['original_status_id'] ?? 0);
+            unset($_POST['original_status_id']);
+
+            $desired_status_id = intval($_POST['status_id']);
+            if ($current_role !== 'superadmin') {
+                if (!$this->is_status_change_allowed($desired_status_id, $original_status_id, $current_role)) {
+                    if ($current_role === 'master') {
+                        $_SESSION['message']['error'] = 'Майстер не може встановити цей статус.';
+                    } elseif ($current_role === 'reception') {
+                        $_SESSION['message']['error'] = 'Приймач не може встановити цей статус.';
+                    } else {
+                        $_SESSION['message']['error'] = 'Недостатньо прав для редагування заявки.';
+                    }
+                    header("Location: {$_POST['back_path']}");
+                    exit();
+                }
+            }
+
+            if (strpos($_POST['register_date'], 'T') !== false) {
+                $register_parts = explode('T', $_POST['register_date']);
+                if (count($register_parts) === 2) {
+                    $_POST['register_date'] = $register_parts[0] . ' ' . $register_parts[1];
+                }
+            }
+
             if (!$model_clients -> get_client_id($_POST)) {
                 $model_clients -> save_new_user($_POST);
                 $_SESSION['message']['info'] = "Створено нового клієнта у БД.";
