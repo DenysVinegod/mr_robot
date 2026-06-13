@@ -1,11 +1,6 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
-
-include ($_SERVER['DOCUMENT_ROOT'].'/configs/db.php');
-require_once ($_SERVER['DOCUMENT_ROOT'].'/app/views/layouts/_main_header.php');
-require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/clients.php');
-require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/contacts.php');
-require_once ($_SERVER['DOCUMENT_ROOT'].'/app/models/devices.php');
+header('Location: /app/views/admin.php');
+exit();
 
 $model_clients = isset($params_database_main) ? new Clients($params_database_main) : new Clients();
 $model_contacts = isset($params_database_main) ? new Contacts($params_database_main) : new Contacts();

@@ -1,16 +1,10 @@
 <?php
-$current_role = $_SESSION['account']['role_name'] ?? null;
-$current_role_js = htmlspecialchars($current_role ?? '', ENT_QUOTES, 'UTF-8');
-$scripts = '<script src="/app/assets/js/repairs.js?v=0.2" defer></script>' .
-           "<script>window.currentRole = '" . $current_role_js . "';</script>";
+$scripts = '<script src="/app/assets/js/repairs.js?v=0.2" defer></script>';
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/views/layouts/_main_header.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/repair.php');
 
 $controller = new Repair();
 $controller -> model -> set_native_table("repairs");
-
-$current_role = $_SESSION['account']['role_name'] ?? null;
-$current_role_js = htmlspecialchars($current_role ?? '', ENT_QUOTES, 'UTF-8');
 
 $per_page = 10;
 $page = isset($_GET['page']) && intval($_GET['page']) > 0 ? intval($_GET['page']) : 1;
@@ -307,10 +301,6 @@ $page = max(1, min($page, $controller -> get_total_pages($per_page)));
                     type="text" 
                     value="<?php echo $_SESSION['account']['id']; ?>"
                     required>
-                <input id="repair_editor_original_status_id"
-                    name="original_status_id"
-                    type="hidden"
-                    value="0">
                 <input id="repair_editor_back_path" 
                     name="back_path"
                     type="text" 

@@ -45,12 +45,10 @@ class Repairs extends ModelsBase {
             
             $this -> connect_to_db();
             $this -> connection -> query($query1);
-            $result = $this -> connection -> query($query2);
+            $new_id = intval($this -> connection -> insert_id);
             $this -> close();
-            
-            $array = $result -> fetch_assoc();
 
-            return $array['id'];
+            return $new_id;
         } else return false;
     }
 
@@ -65,12 +63,17 @@ class Repairs extends ModelsBase {
             && (isset($data['register_date']))) {
             $statuses = $this -> list_elements('statuses');
             $datetime_now = date("Y-m-d H:i:s", time());
+            $done_ids = [];
             foreach($statuses as $value) {
-                if ($value['name'] == 'Видано') $done_id = $value['id'];
+                if (in_array($value['name'], ['Видано', 'Видано без ремонту'], true)) {
+                    $done_ids[] = $value['id'];
+                }
             }
-            if ($done_id == $data['status_id']) $additional_mysql 
-                = "`done_date` = '{$datetime_now}', "; else $additional_mysql 
-                = "`done_date` = NULL, ";
+            if (in_array($data['status_id'], $done_ids, true)) {
+                $additional_mysql = "`done_date` = '{$datetime_now}', ";
+            } else {
+                $additional_mysql = "`done_date` = NULL, ";
+            }
             
             $query = "UPDATE `repairs` SET
                 `status_id`     = '{$data['status_id']}', 
@@ -91,6 +94,18 @@ class Repairs extends ModelsBase {
             $this -> close();
             return true;
         } else return false;
+    }
+
+    function get_repair_status_id(int $repair_id): ?int {
+        $repair_id = intval($repair_id);
+        $query = "SELECT `status_id` FROM `repairs` WHERE `id` = '{$repair_id}' LIMIT 1;";
+        $this -> connect_to_db();
+        $result = $this -> connection -> query($query);
+        $this -> close();
+        if ($row = $result -> fetch_assoc()) {
+            return intval($row['status_id']);
+        }
+        return null;
     }
 
     function count_repairs(string $status='all'): int {

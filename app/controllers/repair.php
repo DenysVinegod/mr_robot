@@ -64,46 +64,11 @@ class Repair {
     }
 
     private function get_allowed_status_transitions(string $role): array {
-        switch ($role) {
-            case 'master':
-                return [
-                    'Нове замовлення' => ['Діагностика'],
-                    'Діагностика' => ['Очікує узгодження', 'Відмовлено'],
-                    'Узгоджено' => ['Виконано', 'Скасовано'],
-                ];
-            case 'reception':
-                return [
-                    'Очікує узгодження' => ['Узгоджено', 'Скасовано'],
-                    'Виконано' => ['Видано', 'Видано без ремонту'],
-                ];
-            default:
-                return [];
-        }
+        return [];
     }
 
     private function is_status_change_allowed(int $desired_status_id, int $original_status_id, string $role): bool {
-        if ($role === 'superadmin') {
-            return true;
-        }
-
-        if ($desired_status_id === $original_status_id && $original_status_id > 0) {
-            return true;
-        }
-
-        global $model_statuses;
-        $desired_status_name = $model_statuses->get_name_by_id($desired_status_id);
-        $original_status_name = $model_statuses->get_name_by_id($original_status_id);
-
-        if ($desired_status_name === null || $original_status_name === null) {
-            return false;
-        }
-
-        $transitions = $this->get_allowed_status_transitions($role);
-        if (!isset($transitions[$original_status_name])) {
-            return false;
-        }
-
-        return in_array($desired_status_name, $transitions[$original_status_name], true);
+        return $role === 'superadmin';
     }
 
     function get_total_pages(int $perPage): int {
@@ -174,13 +139,25 @@ class Repair {
     }
 }
 
+// Ensure workflow statuses exist in the database before any status-dependent logic runs.
+$model_statuses->ensure_statuses([
+    'Нове замовлення',
+    'Діагностика',
+    'Очікує узгодження',
+    'Узгоджено',
+    'Скасовано',
+    'Відмовлено',
+    'Виконано',
+    'Видано',
+    'Видано без ремонту'
+]);
+
 if (isset($_POST['action'])) {
     // determine current role name (if any)
     $current_role = $_SESSION['account']['role_name'] ?? null;
     switch ($_POST['action']) {
         case 'create_new_repair':
-            // only reception and superadmin can create new repairs
-            if (!in_array($current_role, ['superadmin','reception'])) {
+            if ($current_role !== 'superadmin') {
                 $_SESSION['message']['error'] = 'Недостатньо прав для створення заявки.';
                 header('Location: /');
                 exit();
@@ -227,23 +204,22 @@ if (isset($_POST['action'])) {
         case 'edit_repair':
             $_POST['status_id'] = $_POST['status'];
             unset($_POST['status']);
-            $original_status_id = intval($_POST['original_status_id'] ?? 0);
-            unset($_POST['original_status_id']);
+            $repair_id = intval($_POST['id'] ?? 0);
+            $current_status_id = $this->model->get_repair_status_id($repair_id);
+            if ($current_status_id === null) {
+                $_SESSION['message']['error'] = 'Заявку не знайдено.';
+                header("Location: {$_POST['back_path']}");
+                exit();
+            }
 
             $desired_status_id = intval($_POST['status_id']);
-            if ($current_role !== 'superadmin') {
-                if (!$this->is_status_change_allowed($desired_status_id, $original_status_id, $current_role)) {
-                    if ($current_role === 'master') {
-                        $_SESSION['message']['error'] = 'Майстер не може встановити цей статус.';
-                    } elseif ($current_role === 'reception') {
-                        $_SESSION['message']['error'] = 'Приймач не може встановити цей статус.';
-                    } else {
-                        $_SESSION['message']['error'] = 'Недостатньо прав для редагування заявки.';
-                    }
-                    header("Location: {$_POST['back_path']}");
-                    exit();
-                }
+            if (!$this->is_status_change_allowed($desired_status_id, intval($current_status_id), $current_role)) {
+                $_SESSION['message']['error'] = 'Недостатньо прав для редагування заявки.';
+                header("Location: {$_POST['back_path']}");
+                exit();
             }
+
+            $_POST['manager_id'] = $_SESSION['account']['id'];
 
             if (strpos($_POST['register_date'], 'T') !== false) {
                 $register_parts = explode('T', $_POST['register_date']);

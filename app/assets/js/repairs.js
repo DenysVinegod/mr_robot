@@ -9,45 +9,17 @@ function read_repair_details(repair_id) {
 }
 
 function getAllowedStatusesForEditor(currentStatusName) {
-    if (window.currentRole === 'superadmin') {
-        return [
-            'Нове замовлення',
-            'Діагностика',
-            'Очікує узгодження',
-            'Узгоджено',
-            'Скасовано',
-            'Відмовлено',
-            'Виконано',
-            'Видано',
-            'Видано без ремонту'
-        ];
-    }
-
-    if (window.currentRole === 'master') {
-        switch (currentStatusName) {
-            case 'Нове замовлення':
-                return ['Нове замовлення', 'Діагностика'];
-            case 'Діагностика':
-                return ['Діагностика', 'Очікує узгодження', 'Відмовлено'];
-            case 'Узгоджено':
-                return ['Узгоджено', 'Виконано', 'Скасовано'];
-            default:
-                return [currentStatusName];
-        }
-    }
-
-    if (window.currentRole === 'reception') {
-        switch (currentStatusName) {
-            case 'Очікує узгодження':
-                return ['Очікує узгодження', 'Узгоджено', 'Скасовано'];
-            case 'Виконано':
-                return ['Виконано', 'Видано', 'Видано без ремонту'];
-            default:
-                return [currentStatusName];
-        }
-    }
-
-    return [currentStatusName];
+    return [
+        'Нове замовлення',
+        'Діагностика',
+        'Очікує узгодження',
+        'Узгоджено',
+        'Скасовано',
+        'Відмовлено',
+        'Виконано',
+        'Видано',
+        'Видано без ремонту'
+    ];
 }
 
 function fill_modal_editor(data) {
@@ -86,13 +58,7 @@ function fill_modal_editor(data) {
             option.value = existingOptions[statusName];
             option.text = statusName;
             statusSelect.appendChild(option);
-            return;
         }
-
-        const option = document.createElement('option');
-        option.value = '';
-        option.text = statusName;
-        statusSelect.appendChild(option);
     });
 
     if (statusValue.toString() !== '') {
@@ -119,9 +85,6 @@ function fill_modal_editor(data) {
     document.getElementById('repair_editor_price').value = data['price'];
     document.getElementById('repair_editor_master_conclusion').value 
         = data['master_conclusion'];
-    document.getElementById('repair_editor_original_status_id').value 
-        = data['status_id'];
-    
     document.getElementById('repair_editor_id').value 
         = data['id'];
 }
@@ -211,13 +174,13 @@ function sendData(data) {
     form.submit();
 }
 
-const timer_chbox = this.document.getElementById('time_updater_chbox');
-var timer, json_container;
+let overlay, timer_chbox, timer, json_container;
 
 window.addEventListener('load', function () {
+    overlay = document.getElementById('overlay');
+    timer_chbox = this.document.getElementById('time_updater_chbox');
     add_button_to_menu();
 
-    const overlay = document.getElementById('overlay');
     const button_new_repair_html = this.document.getElementById('new_repair_button');
     const closeModalButtons = this.document.querySelectorAll('[data-close-button]');
     const list_elements = this.document.querySelectorAll('.list_line');

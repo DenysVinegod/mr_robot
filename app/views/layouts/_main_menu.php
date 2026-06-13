@@ -10,21 +10,10 @@ $menu_items = [
     ],
 ];
 
-if (isset($_SESSION['account']['role_name']) && in_array($_SESSION['account']['role_name'], ['superadmin', 'reception'])) {
-    $menu_items[] = [
-        'id'        => 'item_resources',
-        'label'     => 'Ресурси',
-        'img_path'  => '/app/assets/images/style/database.png',
-        'type'      => 'tag_a',
-        'action'    => '/app/views/resources.php',
-        'category'  => 'apps'
-    ];
-}
-
 if (isset($_SESSION['account']['role_name']) && $_SESSION['account']['role_name'] === 'superadmin') {
     $menu_items[] = [
         'id'        => 'item_admin',
-        'label'     => 'Адміністрація',
+        'label'     => 'Адмін.',
         'img_path'  => '/app/assets/images/style/settings.png',
         'type'      => 'tag_a',
         'action'    => '/app/views/admin.php',
