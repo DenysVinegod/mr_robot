@@ -34,9 +34,18 @@ $model_statuses
     : new Statuses();
 
 class Repair {
+    private $clientsModel;
+    private $contactsModel;
+    private $devicesModel;
+    private $statusesModel;
+
     function __construct() {
-        global $model_repairs;
-        $this -> model = $model_repairs;
+        global $model_repairs, $model_clients, $model_contacts, $model_devices, $model_statuses;
+        $this->model = $model_repairs;
+        $this->clientsModel = $model_clients;
+        $this->contactsModel = $model_contacts;
+        $this->devicesModel = $model_devices;
+        $this->statusesModel = $model_statuses;
     }
 
     public function build_query_url(array $overrides = []): string {
@@ -57,8 +66,7 @@ class Repair {
     }
 
     function get_statuses(): array {
-        global $model_statuses;
-        return $model_statuses->list_elements('statuses');
+        return $this->statusesModel->list_elements('statuses');
     }
 
     function get_sortable_columns(): array {
@@ -86,6 +94,20 @@ class Repair {
         return in_array($sort_dir, ['ASC', 'DESC'], true) ? $sort_dir : 'DESC';
     }
 
+    /**
+     * Convert an HTML datetime-local value into a database datetime string.
+     */
+    public function format_register_date(string $registerDate): string {
+        if (strpos($registerDate, 'T') === false) {
+            return $registerDate;
+        }
+        $parts = explode('T', $registerDate, 2);
+        return $parts[0] . ' ' . $parts[1];
+    }
+
+    /**
+     * Map repair status text to a CSS class for row highlighting.
+     */
     private function get_status_row_class(string $status): string {
         switch ($status) {
             case 'Нове замовлення':
@@ -103,6 +125,81 @@ class Repair {
         }
     }
 
+    public function ensureClient(array $data): int {
+        if (!$this->clientsModel->get_client_id($data)) {
+            $this->clientsModel->save_new_user($data);
+        }
+        return $this->clientsModel->get_client_id($data);
+    }
+
+    public function ensureContact(array $data): int {
+        if (!$this->contactsModel->get_contact_id($data)) {
+            $this->contactsModel->save_new_contact($data);
+        }
+        return $this->contactsModel->get_contact_id($data);
+    }
+
+    public function ensureDevice(array $data): int {
+        $device_id = $this->devicesModel->get_device_id($data);
+        if ($device_id > 0) {
+            return $device_id;
+        }
+
+        $new_device_id = $this->devicesModel->save_new_device($data);
+        if ($new_device_id > 0) {
+            return $new_device_id;
+        }
+
+        return $this->devicesModel->get_device_id($data);
+    }
+
+    /**
+     * Append a short informational message to the session.
+     */
+    private function addInfoMessage(string $text): void {
+        if (isset($_SESSION['message']['info'])) {
+            $_SESSION['message']['info'] .= '<hr>' . $text;
+        } else {
+            $_SESSION['message']['info'] = $text;
+        }
+    }
+
+    private function getDeviceDisplay(array $value): string {
+        $deviceDisplay = $value['device_name'];
+        $deviceAttrs = [];
+        if (!empty($value['device_color'])) {
+            $deviceAttrs[] = $value['device_color'];
+        }
+        if (!empty($value['device_serial_number'])) {
+            $deviceAttrs[] = 'SN: ' . $value['device_serial_number'];
+        }
+        if (!empty($value['device_cosmetic_condition'])) {
+            $deviceAttrs[] = $value['device_cosmetic_condition'];
+        }
+        return empty($deviceAttrs) ? $deviceDisplay : $deviceDisplay . ' [' . implode(', ', $deviceAttrs) . ']';
+    }
+
+    private function renderRepairRow(array $value, int $rowCounter): void {
+        $rowClass = $rowCounter % 2 === 0 ? 'even' : 'odd';
+        $statusClass = $this->get_status_row_class($value['status']);
+        $deviceDisplay = $this->getDeviceDisplay($value);
+        $jsonData = json_encode($value);
+
+        echo "<tr id='repair_{$value['id']}' class='{$rowClass} list_line {$statusClass}'>";
+        echo "<td>{$value['id']}</td>";
+        echo "<td>{$value['status']}</td>";
+        echo "<td>{$value['surname']} {$value['first_name']} {$value['last_name']}</td>";
+        echo "<td>{$value['contact_type']}: {$value['contact']}</td>";
+        echo "<td>{$deviceDisplay}</td>";
+        echo "<td>{$value['description']}</td>";
+        echo "<td>{$value['price']}</td>";
+        echo "<td>{$value['master_conclusion']}</td>";
+        echo "<td>{$value['register_date']}</td>";
+        echo "<td>{$value['done_date']}</td>";
+        echo "<td class='js_full_info' style='display: none;'>{$jsonData}</td>";
+        echo '</tr>';
+    }
+
     private function get_allowed_status_transitions(string $role): array {
         return [];
     }
@@ -116,7 +213,7 @@ class Repair {
         return max(1, (int) ceil($count / $perPage));
     }
 
-    function render_html_rows(int $page = 1, int $perPage = 0, int $status_id = 0, string $sort_by = 'register_date', string $sort_dir = 'DESC'): void{
+    function render_html_rows(int $page = 1, int $perPage = 0, int $status_id = 0, string $sort_by = 'register_date', string $sort_dir = 'DESC'): void {
         $offset = 0;
         if ($perPage > 0) {
             $offset = ($page - 1) * $perPage;
@@ -125,49 +222,7 @@ class Repair {
         $result = $this->model->list_repairs($status_id, $perPage, $offset, $sort_by, $sort_dir);
         $row_counter = 1;
         foreach ($result as $value) {
-            $status_class = $this -> get_status_row_class($value['status']);
-            if ($row_counter % 2 == 0) {
-                echo "<tr id='repair_{$value['id']}' class='even list_line {$status_class}'>";
-            } else {
-                echo "<tr id='repair_{$value['id']}' class='odd list_line {$status_class}'>";
-            }
-            echo "<td>".$value['id']."</td>";
-            echo "<td>".$value['status']."</td>";
-            echo "<td>"
-                .$value['surname']
-                ." "
-                .$value['first_name']
-                ." "
-                .$value['last_name']
-                ."</td>";
-            echo "<td>"
-                .$value['contact_type']
-                .": ".$value['contact']
-                ."</td>";
-            $device_display = $value['device_name'];
-            $device_attrs = [];
-            if (!empty($value['device_color'])) {
-                $device_attrs[] = $value['device_color'];
-            }
-            if (!empty($value['device_serial_number'])) {
-                $device_attrs[] = 'SN: ' . $value['device_serial_number'];
-            }
-            if (!empty($value['device_cosmetic_condition'])) {
-                $device_attrs[] = $value['device_cosmetic_condition'];
-            }
-            if (count($device_attrs) > 0) {
-                $device_display .= ' [' . implode(', ', $device_attrs) . ']';
-            }
-            echo "<td>".$device_display."</td>";
-            echo "<td>".$value['description']."</td>";
-            echo "<td>".$value['price']."</td>";
-            echo "<td>".$value['master_conclusion']."</td>";
-            echo "<td>".$value['register_date']."</td>";
-            echo "<td>".$value['done_date']."</td>";
-            echo "<td class='js_full_info' style='display: none;'>"
-                .json_encode($value)
-                ."</td>";
-            echo "</tr>";
+            $this->renderRepairRow($value, $row_counter);
             $row_counter++;
         }
     }
@@ -206,6 +261,8 @@ $model_statuses->ensure_statuses([
     'Видано без ремонту'
 ]);
 
+$controller = new Repair();
+
 if (isset($_POST['action'])) {
     // determine current role name (if any)
     $current_role = $_SESSION['account']['role_name'] ?? null;
@@ -216,42 +273,46 @@ if (isset($_POST['action'])) {
                 header('Location: /');
                 exit();
             }
+
             $_POST['status_id'] = $model_statuses->get_id_by_name('Нове замовлення');
-            if (!$model_clients -> get_client_id($_POST)) {
-                $model_clients -> save_new_user($_POST);
-                $_SESSION['message']['info'] = "Створено нового клієнта у БД.";
+
+            $client_id = $controller->ensureClient($_POST);
+            if ($client_id <= 0) {
+                $_SESSION['message']['error'] = 'Не вдалося зберегти дані клієнта.';
+                header("Location: {$_POST['back_path']}");
+                exit();
             }
-            $_POST['client_id'] = $model_clients -> get_client_id($_POST);
-            if (!$model_contacts -> get_contact_id($_POST)) {
-                $model_contacts -> save_new_contact($_POST);
-                if (isset($_SESSION['message']['info'])) {
-                    $_SESSION['message']['info'] 
-                        .= "<hr>Створено новий контакт у БД.";
-                } else $_SESSION['message']['info'] 
-                    = "Створено новий контакт у БД.";
+            $_POST['client_id'] = $client_id;
+
+            $contact_id = $controller->ensureContact($_POST);
+            if ($contact_id <= 0) {
+                $_SESSION['message']['error'] = 'Не вдалося зберегти контакт клієнта.';
+                header("Location: {$_POST['back_path']}");
+                exit();
             }
-            $_POST['contact_id'] = $model_contacts -> get_contact_id($_POST);
-            if (!$model_devices -> get_device_id($_POST)) {
-                $model_devices -> save_new_device($_POST);
-                if (isset($_SESSION['message']['info'])) {
-                    $_SESSION['message']['info'] 
-                        .= "<hr>Створено новий пристрій у БД.";
-                } else $_SESSION['message']['info'] 
-                    = "Створено новий пристрій у БД.";
+            $_POST['contact_id'] = $contact_id;
+
+            $device_id = $controller->ensureDevice($_POST);
+            if ($device_id <= 0) {
+                $_SESSION['message']['error'] = 'Не вдалося зберегти пристрій. Виберіть існуючий пристрій або введіть дані нового.';
+                header("Location: {$_POST['back_path']}");
+                exit();
             }
-            $_POST['device_id'] = $model_devices -> get_device_id($_POST);
-            $_POST['register_date'] = explode("T", $_POST['register_date']);
-            $_POST['register_date'] 
-                = $_POST['register_date'][0] 
-                . " " 
-                . $_POST['register_date'][1];
-            $controller = new Repair();
-            $_POST['id'] = $controller -> model -> save_new_repair($_POST);
+            $_POST['device_id'] = $device_id;
+
+            $_POST['register_date'] = $controller->format_register_date($_POST['register_date']);
+            $_POST['id'] = $controller->model->save_new_repair($_POST);
+            if ($_POST['id'] <= 0) {
+                $_SESSION['message']['error'] = 'Не вдалося зберегти замовлення на ремонт.';
+                header("Location: {$_POST['back_path']}");
+                exit();
+            }
             if (isset($_SESSION['message']['info'])) {
                 $_SESSION['message']['info'] 
-                    .= "<hr>Створено нову заявку на ремонт #{$_POST['id']}.";
-            } else $_SESSION['message']['info'] 
-                = "Створено нову заявку на ремонт #{$_POST['id']}.";
+                    .= "<hr>Створено нову заявку на ремонт #{$_POST['id']}";
+            } else {
+                $_SESSION['message']['info'] = "Створено нову заявку на ремонт #{$_POST['id']}";
+            }
             header("Location: {$_POST['back_path']}");
             break;
         
@@ -259,7 +320,7 @@ if (isset($_POST['action'])) {
             $_POST['status_id'] = $_POST['status'];
             unset($_POST['status']);
             $repair_id = intval($_POST['id'] ?? 0);
-            $current_status_id = $this->model->get_repair_status_id($repair_id);
+            $current_status_id = $controller->model->get_repair_status_id($repair_id);
             if ($current_status_id === null) {
                 $_SESSION['message']['error'] = 'Заявку не знайдено.';
                 header("Location: {$_POST['back_path']}");
@@ -267,7 +328,7 @@ if (isset($_POST['action'])) {
             }
 
             $desired_status_id = intval($_POST['status_id']);
-            if (!$this->is_status_change_allowed($desired_status_id, intval($current_status_id), $current_role)) {
+            if (!$controller->is_status_change_allowed($desired_status_id, intval($current_status_id), $current_role)) {
                 $_SESSION['message']['error'] = 'Недостатньо прав для редагування заявки.';
                 header("Location: {$_POST['back_path']}");
                 exit();

@@ -8,7 +8,6 @@ configs/*.php
 
 # Composer
 # vendor/
-# !vendor/vinegod # not including
 vendor/composer
 vendor/tecnickcom
 vendor/autoload.php

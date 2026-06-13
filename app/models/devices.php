@@ -17,30 +17,30 @@ class Devices extends ModelsBase {
 
         if ((isset($data['device_type_id'])) 
         && (isset($data['client_id']))) {
-            $device_description = isset($data['device_description']) ? trim($data['device_description']) : '';
-            if ($device_description !== '') {
-                return 0;
+            $serial_number = isset($data['device_serial_number']) ? trim($data['device_serial_number']) : '';
+            if ($serial_number !== '') {
+                $query = "SELECT `id` FROM `devices` 
+                    WHERE 
+                    `type_id` = '{$this -> clear_input($data['device_type_id'])}' 
+                    AND `client_id` = '{$this -> clear_input($data['client_id'])}' 
+                    AND `serial_number` = '{$this -> clear_input($serial_number)}'
+                    LIMIT 1;";
+                $this -> connect_to_db();
+                $result = $this -> connection -> query($query);
+                $this -> close();
+                if ($result -> num_rows) {
+                    $row = $result -> fetch_assoc();
+                    return intval($row['id']);
+                }
             }
-
-            $query = "SELECT `id` FROM `devices` 
-                WHERE 
-                `type_id` = '{$this -> clear_input($data['device_type_id'])}' 
-                AND `client_id` = '{$this -> clear_input($data['client_id'])}' 
-                LIMIT 1;";
-            $this -> connect_to_db();
-            $result = $this -> connection -> query($query);
-            $this -> close();
-            if ($result -> num_rows) {
-                $row = $result -> fetch_assoc();
-                return intval($row['id']);
-            } else return 0;
+            return 0;
         } else return 0;
     }
 
     /**
-     * @return bool false if input array invalid
+     * @return int inserted device id or 0 if invalid
      */
-    function save_new_device(array $data): bool{
+    function save_new_device(array $data): int{
         if ((isset($data['device_type_id'])) 
             && (isset($data['client_id']))) {
             $description = isset($data['device_description']) ? $this->clear_input($data['device_description']) : '';
@@ -66,9 +66,10 @@ class Devices extends ModelsBase {
                 );";
             $this -> connect_to_db();
             $result = $this -> connection -> query($query);
+            $insert_id = intval($this->connection->insert_id);
             $this -> close();
-            return true;
-        } else return false;
+            return $result ? $insert_id : 0;
+        } else return 0;
     }
 }
 ?>

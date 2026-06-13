@@ -217,6 +217,33 @@ function renderClientDevices(clientId) {
     customerDeviceSelect.disabled = false;
 }
 
+function updateDeviceSelectState() {
+    const selectedClientId = Number(customerClientId.value) > 0;
+    const hasCustomerName = [customerSurname, customerFirstName, customerLastName].some(input => input.value.trim() !== '');
+
+    if (selectedClientId) {
+        return;
+    }
+
+    if (hasCustomerName) {
+        customerDeviceSelect.disabled = false;
+        customerDeviceSelect.innerHTML = '';
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '0';
+        placeholderOption.textContent = 'Оберіть клієнта або додайте новий пристрій';
+        customerDeviceSelect.appendChild(placeholderOption);
+        const newOption = document.createElement('option');
+        newOption.value = 'new';
+        newOption.textContent = 'Додати новий пристрій';
+        customerDeviceSelect.appendChild(newOption);
+        customerNewDeviceFields.classList.add('hidden');
+    } else {
+        customerDeviceSelect.disabled = true;
+        customerDeviceSelect.innerHTML = '<option value="0">Оберіть клієнта для пристрою</option><option value="new">Додати новий пристрій</option>';
+        customerNewDeviceFields.classList.add('hidden');
+    }
+}
+
 function resetNewRepairModal() {
     customerSearch.value = '';
     customerSuggestions.innerHTML = '';
@@ -371,8 +398,13 @@ window.addEventListener('load', function () {
         customerSearch.addEventListener('input', () => {
             const matches = filterClientsByQuery(customerSearch.value);
             renderClientSuggestions(matches.slice(0, 6));
+            updateDeviceSelectState();
         });
     }
+
+    [customerSurname, customerFirstName, customerLastName].forEach(input => {
+        input.addEventListener('input', updateDeviceSelectState);
+    });
 
     if (customerNewContactButton) {
         customerNewContactButton.addEventListener('click', () => {
