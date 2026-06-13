@@ -183,19 +183,29 @@ class Repair {
         $rowClass = $rowCounter % 2 === 0 ? 'even' : 'odd';
         $statusClass = $this->get_status_row_class($value['status']);
         $deviceDisplay = $this->getDeviceDisplay($value);
-        $jsonData = json_encode($value);
+        $jsonData = htmlspecialchars(json_encode($value, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
 
-        echo "<tr id='repair_{$value['id']}' class='{$rowClass} list_line {$statusClass}'>";
-        echo "<td>{$value['id']}</td>";
-        echo "<td>{$value['status']}</td>";
-        echo "<td>{$value['surname']} {$value['first_name']} {$value['last_name']}</td>";
-        echo "<td>{$value['contact_type']}: {$value['contact']}</td>";
+        $id = intval($value['id']);
+        $safeStatus = htmlspecialchars($value['status'], ENT_QUOTES, 'UTF-8');
+        $safeName = htmlspecialchars($value['surname'] . ' ' . $value['first_name'] . ' ' . $value['last_name'], ENT_QUOTES, 'UTF-8');
+        $safeContact = htmlspecialchars($value['contact_type'] . ': ' . $value['contact'], ENT_QUOTES, 'UTF-8');
+        $safeDescription = htmlspecialchars($value['description'], ENT_QUOTES, 'UTF-8');
+        $safePrice = htmlspecialchars($value['price'], ENT_QUOTES, 'UTF-8');
+        $safeConclusion = htmlspecialchars($value['master_conclusion'], ENT_QUOTES, 'UTF-8');
+        $safeRegisterDate = htmlspecialchars($value['register_date'], ENT_QUOTES, 'UTF-8');
+        $safeDoneDate = htmlspecialchars($value['done_date'], ENT_QUOTES, 'UTF-8');
+
+        echo "<tr id='repair_{$id}' class='{$rowClass} list_line {$statusClass}'>";
+        echo "<td>{$id}</td>";
+        echo "<td>{$safeStatus}</td>";
+        echo "<td>{$safeName}</td>";
+        echo "<td>{$safeContact}</td>";
         echo "<td>{$deviceDisplay}</td>";
-        echo "<td>{$value['description']}</td>";
-        echo "<td>{$value['price']}</td>";
-        echo "<td>{$value['master_conclusion']}</td>";
-        echo "<td>{$value['register_date']}</td>";
-        echo "<td>{$value['done_date']}</td>";
+        echo "<td>{$safeDescription}</td>";
+        echo "<td>{$safePrice}</td>";
+        echo "<td>{$safeConclusion}</td>";
+        echo "<td>{$safeRegisterDate}</td>";
+        echo "<td>{$safeDoneDate}</td>";
         echo "<td class='js_full_info' style='display: none;'>{$jsonData}</td>";
         echo '</tr>';
     }
@@ -204,7 +214,7 @@ class Repair {
         return [];
     }
 
-    private function is_status_change_allowed(int $desired_status_id, int $original_status_id, string $role): bool {
+    public function is_status_change_allowed(int $desired_status_id, int $original_status_id, string $role): bool {
         return $role === 'superadmin';
     }
 

@@ -188,12 +188,21 @@ foreach ($device_types as $type) {
 
 <h1>Адміністрація</h1>
 
-<div class="admin_tabs">
-    <button class="admin_tab_btn active" onclick="show_tab('users', this)">Користувачі</button>
-    <button class="admin_tab_btn" onclick="show_tab('clients', this)">Клієнти</button>
-    <button class="admin_tab_btn" onclick="show_tab('contacts', this)">Контакти</button>
-    <button class="admin_tab_btn" onclick="show_tab('devices', this)">Пристрої</button>
-    <button class="admin_tab_btn" onclick="show_tab('repairs', this)">Ремонти</button>
+<div class="admin_tab_row">
+    <div class="admin_tabs">
+        <button class="admin_tab_btn active" data-tab="users" onclick="show_tab('users', this)">Користувачі</button>
+        <button class="admin_tab_btn" data-tab="clients" onclick="show_tab('clients', this)">Клієнти</button>
+        <button class="admin_tab_btn" data-tab="contacts" onclick="show_tab('contacts', this)">Контакти</button>
+        <button class="admin_tab_btn" data-tab="devices" onclick="show_tab('devices', this)">Пристрої</button>
+        <button class="admin_tab_btn" data-tab="repairs" onclick="show_tab('repairs', this)">Ремонти</button>
+    </div>
+    <div class="pagination_container">
+        <div class="pagination">
+            <button id="admin_prev_page" class="pagination_button" type="button">«</button>
+            <span id="admin_page_info">1 / 1</span>
+            <button id="admin_next_page" class="pagination_button" type="button">»</button>
+        </div>
+    </div>
 </div>
 
 <!-- ================= USERS SECTION ================= -->
@@ -248,6 +257,12 @@ foreach ($device_types as $type) {
                         <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
                         <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
                         <button type="submit" class="button button_danger button_small">🗑️ Видалити</button>
+                    </form>
+                    <form action="/app/controllers/admin.php" method="post" onsubmit="return confirm('Каскадне видалення видалить усі ремонти, пов’язані з цим користувачем. Ви впевнені?');">
+                        <input type="hidden" name="action" value="delete_user_cascade">
+                        <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
+                        <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
+                        <button type="submit" class="button button_secondary button_small">⚠️ Каскадне видалення</button>
                     </form>
                 </td>
             </tr>
@@ -306,6 +321,12 @@ foreach ($device_types as $type) {
                         <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
                         <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
                         <button type="submit" class="button button_danger button_small">🗑️ Видалити</button>
+                    </form>
+                    <form action="/app/controllers/admin.php" method="post" onsubmit="return confirm('Каскадне видалення видалить всі ремонти, контакти та пристрої цього клієнта. Ви впевнені?');">
+                        <input type="hidden" name="action" value="delete_client_cascade">
+                        <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+                        <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
+                        <button type="submit" class="button button_secondary button_small">⚠️ Каскадне видалення</button>
                     </form>
                 </td>
             </tr>
@@ -369,6 +390,12 @@ foreach ($device_types as $type) {
                         <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
                         <button type="submit" class="button button_danger button_small">🗑️ Видалити</button>
                     </form>
+                    <form action="/app/controllers/admin.php" method="post" onsubmit="return confirm('Каскадне видалення видалить всі ремонти з цим контактом. Ви впевнені?');">
+                        <input type="hidden" name="action" value="delete_contact_cascade">
+                        <input type="hidden" name="id" value="<?php echo $contact['id']; ?>">
+                        <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
+                        <button type="submit" class="button button_secondary button_small">⚠️ Каскадне видалення</button>
+                    </form>
                 </td>
             </tr>
         <?php $counter++; endforeach; ?>
@@ -427,6 +454,12 @@ foreach ($device_types as $type) {
                         <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
                         <button type="submit" class="button button_danger button_small">🗑️ Видалити</button>
                     </form>
+                    <form action="/app/controllers/admin.php" method="post" onsubmit="return confirm('Каскадне видалення видалить всі ремонти з цим пристроєм. Ви впевнені?');">
+                        <input type="hidden" name="action" value="delete_device_cascade">
+                        <input type="hidden" name="id" value="<?php echo $device['id']; ?>">
+                        <input type="hidden" name="back_path" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
+                        <button type="submit" class="button button_secondary button_small">⚠️ Каскадне видалення</button>
+                    </form>
                 </td>
             </tr>
         <?php $counter++; endforeach; ?>
@@ -472,6 +505,25 @@ foreach ($device_types as $type) {
 </div>
 
 <script>
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+function setFormsTab(tab_name) {
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        let input = form.querySelector('input[name="tab"]');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'tab';
+            form.appendChild(input);
+        }
+        input.value = tab_name;
+    });
+}
+
 function show_tab(tab_name, button) {
     const tabs = document.querySelectorAll('.admin_tab_content');
     const buttons = document.querySelectorAll('.admin_tab_btn');
@@ -486,7 +538,117 @@ function show_tab(tab_name, button) {
     if (button) {
         button.classList.add('active');
     }
+    setFormsTab(tab_name);
+    resetPagination();
+    updatePageInfo();
 }
+
+function getSearchFields() {
+    return {
+        users: [
+            { value: 'login', label: 'Логін' },
+            { value: 'role_name', label: 'Роль' }
+        ],
+        clients: [
+            { value: 'first_name', label: 'Ім’я' },
+            { value: 'surname', label: 'Прізвище' },
+            { value: 'last_name', label: 'По батькові' }
+        ],
+        contacts: [
+            { value: 'client', label: 'Клієнт' },
+            { value: 'type', label: 'Тип' },
+            { value: 'contact', label: 'Контакт' }
+        ],
+        devices: [
+            { value: 'client', label: 'Клієнт' },
+            { value: 'type', label: 'Тип пристрою' },
+            { value: 'description', label: 'Опис' }
+        ],
+        repairs: [
+            { value: 'id', label: 'ID' },
+            { value: 'status', label: 'Статус' },
+            { value: 'device_name', label: 'Пристрій' },
+            { value: 'contact', label: 'Контакт' }
+        ]
+    };
+}
+
+function updateSearchControls(tab_name) {
+    const fieldSelect = document.getElementById('admin_search_field');
+    const fields = getSearchFields()[tab_name] || [];
+
+    fieldSelect.innerHTML = '';
+    fields.forEach(field => {
+        const option = document.createElement('option');
+        option.value = field.value;
+        option.textContent = field.label;
+        fieldSelect.appendChild(option);
+    });
+}
+
+const pagination = {
+    current: 1,
+    pageSize: 10,
+    total: 1
+};
+
+function resetPagination() {
+    pagination.current = 1;
+}
+
+function updatePageInfo() {
+    const pageInfo = document.getElementById('admin_page_info');
+    pageInfo.textContent = `${pagination.current} / ${pagination.total}`;
+}
+
+function updatePaginationCount(tab_name) {
+    const tab = document.getElementById(tab_name);
+    if (!tab) return;
+    
+    const totalRows = tab.querySelectorAll('table tr.list_line').length;
+    pagination.total = Math.max(1, Math.ceil(totalRows / pagination.pageSize));
+    if (pagination.current > pagination.total) {
+        pagination.current = pagination.total;
+    }
+    updatePageInfo();
+}
+
+
+function changePage(delta) {
+    pagination.current = Math.max(1, Math.min(pagination.total, pagination.current + delta));
+    updatePageInfo();
+    const tabName = document.querySelector('.admin_tab_content.active')?.id || 'users';
+    renderPagination(tabName);
+}
+
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+function setFormsTab(tab_name) {
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        let input = form.querySelector('input[name="tab"]');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'tab';
+            form.appendChild(input);
+        }
+        input.value = tab_name;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const selectedTab = getQueryParam('tab');
+    const initialTab = selectedTab || 'users';
+    const button = document.querySelector(`.admin_tab_btn[data-tab="${initialTab}"]`);
+    show_tab(initialTab, button);
+
+    document.getElementById('admin_prev_page').addEventListener('click', () => changePage(-1));
+    document.getElementById('admin_next_page').addEventListener('click', () => changePage(1));
+});
 
 function open_user_editor(data) {
     document.getElementById('user_id').value = data.id;

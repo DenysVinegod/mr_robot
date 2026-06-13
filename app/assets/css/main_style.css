@@ -487,6 +487,15 @@ body {
         color: var(--main_dark);
     }
 
+    .admin_tab_row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        margin: 24px 0 12px;
+    }
+
     .admin_form label {
         display: block;
         margin-bottom: 8px;
@@ -768,7 +777,7 @@ tr.status-default {
     gap: 12px;
 }
 
-..pagination_container {
+.pagination_container {
     margin: 0;
     display: flex;
     align-items: center;
@@ -783,7 +792,6 @@ tr.status-default {
     line-height: 1.35;
     text-align: center;
     opacity: 0.9;
-}
 }
 
 .filter_group label {

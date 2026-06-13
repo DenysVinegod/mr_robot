@@ -22,17 +22,6 @@ $model_contacts = isset($params_database_main) ? new Contacts($params_database_m
 $model_devices = isset($params_database_main) ? new Devices($params_database_main) : new Devices();
 $model_repairs = isset($params_database_main) ? new Repairs($params_database_main) : new Repairs();
 
-function redirect_back(array $data = []) {
-    $back_path = $_POST['back_path'] ?? '/app/views/admin.php';
-    if (!empty($data)) {
-        foreach ($data as $key => $value) {
-            $_SESSION['message'][$key] = $value;
-        }
-    }
-    header("Location: {$back_path}");
-    exit();
-}
-
 if (!isset($_POST['action'])) {
     header('Location: /');
     exit();
@@ -53,6 +42,53 @@ function execute_query($query) {
     $result = $conn->query($query);
     $conn->close();
     return $result;
+}
+
+function get_count(string $query): int {
+    $result = execute_query($query);
+    if ($result && $row = $result->fetch_assoc()) {
+        return intval($row['count']);
+    }
+    return 0;
+}
+
+function get_rows(string $query): array {
+    $result = execute_query($query);
+    $rows = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+    }
+    return $rows;
+}
+
+function implode_ids(array $rows, string $field = 'id', int $limit = 5): string {
+    $values = array_column($rows, $field);
+    if (empty($values)) {
+        return '';
+    }
+    $short = array_slice($values, 0, $limit);
+    $suffix = count($values) > $limit ? ', ...' : '';
+    return implode(', ', $short) . $suffix;
+}
+
+function redirect_back(array $data = []) {
+    $back_path = $_POST['back_path'] ?? '/app/views/admin.php';
+    $tab = $_POST['tab'] ?? null;
+    if (!empty($data)) {
+        foreach ($data as $key => $value) {
+            $_SESSION['message'][$key] = $value;
+        }
+    }
+    $path = parse_url($back_path, PHP_URL_PATH) ?: '/app/views/admin.php';
+    if ($tab) {
+        $back_path = $path . '?tab=' . urlencode($tab);
+    } else {
+        $back_path = $path;
+    }
+    header("Location: {$back_path}");
+    exit();
 }
 
 // ============= USERS =============
@@ -76,11 +112,31 @@ if ($action === 'update_user') {
 
 if ($action === 'delete_user') {
     if (isset($_POST['id'])) {
-        if ($model_users->delete_user(intval($_POST['id']))) {
+        $id = intval($_POST['id']);
+        $repairCount = get_count("SELECT COUNT(*) AS `count` FROM `repairs` WHERE `manager_id` = {$id};");
+
+        if ($repairCount > 0) {
+            $repairRows = get_rows("SELECT `id` FROM `repairs` WHERE `manager_id` = {$id} ORDER BY `id` ASC LIMIT 10;");
+            $repairIds = implode_ids($repairRows);
+            redirect_back(['error' => "Користувача не можна видалити — знайдено {$repairCount} ремонт(ів) (IDs: {$repairIds}). Розгляньте каскадне видалення."]);
+        }
+
+        if ($model_users->delete_user($id)) {
             redirect_back(['info' => 'Користувача видалено.']);
         }
     }
     redirect_back(['error' => 'Не вдалося видалити користувача.']);
+}
+
+if ($action === 'delete_user_cascade') {
+    if (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        execute_query("DELETE FROM `repairs` WHERE `manager_id` = {$id};");
+        if ($model_users->delete_user($id)) {
+            redirect_back(['info' => 'Користувача і пов’язані ремонти видалено.']);
+        }
+    }
+    redirect_back(['error' => 'Не вдалося виконати каскадне видалення користувача.']);
 }
 
 // ============= CLIENTS =============
@@ -112,13 +168,59 @@ if ($action === 'update_client') {
 if ($action === 'delete_client') {
     if (isset($_POST['id'])) {
         $id = intval($_POST['id']);
+
+        $repairsCount = get_count("SELECT COUNT(*) AS `count` FROM `repairs` WHERE `client_id` = {$id};");
+        $contactsCount = get_count("SELECT COUNT(*) AS `count` FROM `contacts` WHERE `client_id` = {$id};");
+        $devicesCount = get_count("SELECT COUNT(*) AS `count` FROM `devices` WHERE `client_id` = {$id};");
+
+        if ($repairsCount > 0 || $contactsCount > 0 || $devicesCount > 0) {
+            $details = [];
+            if ($repairsCount > 0) {
+                $repairRows = get_rows("SELECT `id` FROM `repairs` WHERE `client_id` = {$id} ORDER BY `id` ASC LIMIT 10;");
+                $repairIds = implode_ids($repairRows);
+                $details[] = "ремонтів: {$repairsCount} (IDs: {$repairIds})";
+            }
+            if ($contactsCount > 0) {
+                $contactRows = get_rows("SELECT `id` FROM `contacts` WHERE `client_id` = {$id} ORDER BY `id` ASC LIMIT 10;");
+                $contactIds = implode_ids($contactRows);
+                $details[] = "контактів: {$contactsCount} (IDs: {$contactIds})";
+            }
+            if ($devicesCount > 0) {
+                $deviceRows = get_rows("SELECT `id`, `description` FROM `devices` WHERE `client_id` = {$id} ORDER BY `id` ASC LIMIT 10;");
+                $deviceSummaries = array_map(function($row) {
+                    $label = trim($row['description']) ?: 'Пристрій';
+                    return "{$row['id']}: {$label}";
+                }, $deviceRows);
+                $devicesList = implode(', ', array_slice($deviceSummaries, 0, 5));
+                if (count($deviceSummaries) > 5) {
+                    $devicesList .= ', ...';
+                }
+                $details[] = "пристроїв: {$devicesCount} (IDs: {$devicesList})";
+            }
+            $detailText = implode('; ', $details);
+            redirect_back(['error' => "Клієнта не можна видалити — знайдено залежні записи ({$detailText}). Розгляньте каскадне видалення."]);
+        }
+
         $query = "DELETE FROM `clients` WHERE `id` = {$id} LIMIT 1;";
-        
         if (execute_query($query)) {
             redirect_back(['info' => 'Клієнта видалено.']);
         }
     }
     redirect_back(['error' => 'Не вдалося видалити клієнта.']);
+}
+
+if ($action === 'delete_client_cascade') {
+    if (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        execute_query("DELETE FROM `repairs` WHERE `client_id` = {$id};");
+        execute_query("DELETE FROM `contacts` WHERE `client_id` = {$id};");
+        execute_query("DELETE FROM `devices` WHERE `client_id` = {$id};");
+        $query = "DELETE FROM `clients` WHERE `id` = {$id} LIMIT 1;";
+        if (execute_query($query)) {
+            redirect_back(['info' => 'Клієнта та всі пов’язані записи видалено.']);
+        }
+    }
+    redirect_back(['error' => 'Не вдалося виконати каскадне видалення клієнта.']);
 }
 
 // ============= CONTACTS =============
@@ -150,13 +252,32 @@ if ($action === 'update_contact') {
 if ($action === 'delete_contact') {
     if (isset($_POST['id'])) {
         $id = intval($_POST['id']);
+        $repairsCount = get_count("SELECT COUNT(*) AS `count` FROM `repairs` WHERE `contact_id` = {$id};");
+
+        if ($repairsCount > 0) {
+            $repairRows = get_rows("SELECT `id` FROM `repairs` WHERE `contact_id` = {$id} ORDER BY `id` ASC LIMIT 10;");
+            $repairIds = implode_ids($repairRows);
+            redirect_back(['error' => "Контакт не можна видалити — знайдено {$repairsCount} ремонт(ів) (IDs: {$repairIds}). Розгляньте каскадне видалення."]);
+        }
+
         $query = "DELETE FROM `contacts` WHERE `id` = {$id} LIMIT 1;";
-        
         if (execute_query($query)) {
             redirect_back(['info' => 'Контакт видалено.']);
         }
     }
     redirect_back(['error' => 'Не вдалося видалити контакт.']);
+}
+
+if ($action === 'delete_contact_cascade') {
+    if (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        execute_query("DELETE FROM `repairs` WHERE `contact_id` = {$id};");
+        $query = "DELETE FROM `contacts` WHERE `id` = {$id} LIMIT 1;";
+        if (execute_query($query)) {
+            redirect_back(['info' => 'Контакт та пов’язані ремонти видалено.']);
+        }
+    }
+    redirect_back(['error' => 'Не вдалося виконати каскадне видалення контакту.']);
 }
 
 // ============= DEVICES =============
@@ -188,13 +309,32 @@ if ($action === 'update_device') {
 if ($action === 'delete_device') {
     if (isset($_POST['id'])) {
         $id = intval($_POST['id']);
+        $repairsCount = get_count("SELECT COUNT(*) AS `count` FROM `repairs` WHERE `device_id` = {$id};");
+
+        if ($repairsCount > 0) {
+            $repairRows = get_rows("SELECT `id` FROM `repairs` WHERE `device_id` = {$id} ORDER BY `id` ASC LIMIT 10;");
+            $repairIds = implode_ids($repairRows);
+            redirect_back(['error' => "Пристрій не можна видалити — знайдено {$repairsCount} ремонт(ів) (IDs: {$repairIds}). Розгляньте каскадне видалення."]);
+        }
+
         $query = "DELETE FROM `devices` WHERE `id` = {$id} LIMIT 1;";
-        
         if (execute_query($query)) {
             redirect_back(['info' => 'Пристрій видалено.']);
         }
     }
     redirect_back(['error' => 'Не вдалося видалити пристрій.']);
+}
+
+if ($action === 'delete_device_cascade') {
+    if (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        execute_query("DELETE FROM `repairs` WHERE `device_id` = {$id};");
+        $query = "DELETE FROM `devices` WHERE `id` = {$id} LIMIT 1;";
+        if (execute_query($query)) {
+            redirect_back(['info' => 'Пристрій та пов’язані ремонти видалено.']);
+        }
+    }
+    redirect_back(['error' => 'Не вдалося виконати каскадне видалення пристрою.']);
 }
 
 // ============= REPAIRS =============
