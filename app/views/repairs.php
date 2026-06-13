@@ -5,6 +5,10 @@ require_once ($_SERVER['DOCUMENT_ROOT'].'/app/controllers/repair.php');
 
 $controller = new Repair();
 $controller -> model -> set_native_table("repairs");
+
+$per_page = 10;
+$page = isset($_GET['page']) && intval($_GET['page']) > 0 ? intval($_GET['page']) : 1;
+$page = max(1, min($page, $controller -> get_total_pages($per_page)));
 ?>
 
 <div id="modal_new_repair_editor" class="modal">
@@ -317,6 +321,7 @@ $controller -> model -> set_native_table("repairs");
 </div>
 
 <div class="repairs_table_container">
+    <?php $controller -> render_pagination($page, $per_page); ?>
     <table id="repairs_list">
         <tr class="headers">
             <th>#</th>
@@ -330,8 +335,9 @@ $controller -> model -> set_native_table("repairs");
             <th>Дата<br>прийому</th>
             <th>Дата<br>видачі</th>
         </tr>
-        <?php $controller -> render_html_rows(); ?>
+        <?php $controller -> render_html_rows($page, $per_page); ?>
     </table>
+    <?php $controller -> render_pagination($page, $per_page); ?>
 </div>
 
 <?php

@@ -93,7 +93,25 @@ class Repairs extends ModelsBase {
         } else return false;
     }
 
-    function list_repairs(string $status='all'): array{
+    function count_repairs(string $status='all'): int {
+        $query = "SELECT COUNT(*) AS `count` FROM `repairs`
+            INNER JOIN `statuses`
+                ON `repairs`.`status_id` = `statuses`.`id`
+            INNER JOIN `clients`
+                ON `repairs`.`client_id` = `clients`.`id`
+            INNER JOIN `contacts`
+                ON `repairs`.`contact_id` = `contacts`.`id`
+            INNER JOIN `devices`
+                ON `repairs`.`device_id` = `devices`.`id`";
+
+        $this -> connect_to_db();
+        $result = $this -> connection -> query($query);
+        $this -> close();
+        $row = $result -> fetch_assoc();
+        return intval($row['count']);
+    }
+
+    function list_repairs(string $status='all', int $limit = 0, int $offset = 0): array{
         $array = array();
         $query = "SELECT 
             `repairs`.`id`, 
@@ -128,7 +146,13 @@ class Repairs extends ModelsBase {
                 ON `repairs`.`device_id` = `devices`.`id`
             INNER JOIN `device_types`
                 ON `devices`.`type_id` = `device_types`.`id`
-            ORDER BY `repairs`.`register_date` DESC;";
+            ORDER BY `repairs`.`register_date` DESC";
+
+        if ($limit > 0) {
+            $query .= " LIMIT {$limit} OFFSET {$offset}";
+        }
+        $query .= ";";
+
         $this -> connect_to_db();
         $result = $this -> connection -> query($query);
         $this -> close();

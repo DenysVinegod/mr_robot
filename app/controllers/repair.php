@@ -39,12 +39,50 @@ class Repair {
         $this -> model = $model_repairs;
     }
 
-    function render_html_rows(): void{
-        $result = $this -> model -> list_repairs();
+    private function build_page_url(int $page): string {
+        $base_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
+        $query['page'] = $page;
+        return $base_path . '?' . http_build_query($query);
+    }
+
+    private function get_status_row_class(string $status): string {
+        switch ($status) {
+            case 'Нове замовлення':
+                return 'status-new-order';
+            case 'Діагностика':
+                return 'status-diagnostics';
+            case 'Виконано':
+                return 'status-done';
+            case 'Видано':
+                return 'status-delivered';
+            case 'Видано без ремонту':
+                return 'status-no-repair';
+            default:
+                return 'status-default';
+        }
+    }
+
+    function get_total_pages(int $perPage): int {
+        $count = $this -> model -> count_repairs();
+        return max(1, (int) ceil($count / $perPage));
+    }
+
+    function render_html_rows(int $page = 1, int $perPage = 0): void{
+        $offset = 0;
+        if ($perPage > 0) {
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $result = $this -> model -> list_repairs('all', $perPage, $offset);
         $row_counter = 1;
         foreach ($result as $value) {
-            if ($row_counter % 2 == 0) echo "<tr id='repair_{$value['id']}' class='even list_line'>"; 
-            else echo "<tr id='repair_{$value['id']}' class='odd list_line'>";
+            $status_class = $this -> get_status_row_class($value['status']);
+            if ($row_counter % 2 == 0) {
+                echo "<tr id='repair_{$value['id']}' class='even list_line {$status_class}'>";
+            } else {
+                echo "<tr id='repair_{$value['id']}' class='odd list_line {$status_class}'>";
+            }
             echo "<td>".$value['id']."</td>";
             echo "<td>".$value['status']."</td>";
             echo "<td>"
@@ -70,6 +108,26 @@ class Repair {
             echo "</tr>";
             $row_counter++;
         }
+    }
+
+    function render_pagination(int $page, int $perPage): void {
+        $total_pages = $this -> get_total_pages($perPage);
+        if ($total_pages <= 1) return;
+
+        echo "<div class='pagination_container'><nav class='pagination'>";
+        if ($page > 1) {
+            echo "<a href='".$this->build_page_url($page - 1)."' class='pagination_button pagination_prev'>&laquo; Попередня</a>";
+        }
+
+        for ($page_number = 1; $page_number <= $total_pages; $page_number++) {
+            $class = $page_number === $page ? 'pagination_button pagination_active' : 'pagination_button';
+            echo "<a href='".$this->build_page_url($page_number)."' class='{$class}'>".$page_number."</a>";
+        }
+
+        if ($page < $total_pages) {
+            echo "<a href='".$this->build_page_url($page + 1)."' class='pagination_button pagination_next'>Наступна &raquo;</a>";
+        }
+        echo "</nav></div>";
     }
 }
 
