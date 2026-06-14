@@ -130,6 +130,70 @@ class Repairs extends ModelsBase {
         return intval($row['count']);
     }
 
+    function count_repairs_by_status_names(array $status_names): int {
+        if (count($status_names) === 0) {
+            return 0;
+        }
+
+        $escaped_names = array_map(function ($name) {
+            return "'" . $this->clear_input($name) . "'";
+        }, $status_names);
+        $query = "SELECT COUNT(*) AS `count` FROM `repairs`
+            INNER JOIN `statuses`
+                ON `repairs`.`status_id` = `statuses`.`id`
+            WHERE `statuses`.`name` IN (" . implode(', ', $escaped_names) . ")";
+
+        $this->connect_to_db();
+        $result = $this->connection->query($query);
+        $this->close();
+        $row = $result->fetch_assoc();
+        return intval($row['count']);
+    }
+
+    function count_repairs_by_status_names_in_month(array $status_names, int $year, int $month, string $date_field = 'register_date'): int {
+        if (count($status_names) === 0) {
+            return 0;
+        }
+
+        $allowed_date_fields = ['register_date', 'done_date'];
+        if (!in_array($date_field, $allowed_date_fields, true)) {
+            $date_field = 'register_date';
+        }
+
+        $year = intval($year);
+        $month = intval($month);
+        $escaped_names = array_map(function ($name) {
+            return "'" . $this->clear_input($name) . "'";
+        }, $status_names);
+        $query = "SELECT COUNT(*) AS `count` FROM `repairs`
+            INNER JOIN `statuses`
+                ON `repairs`.`status_id` = `statuses`.`id`
+            WHERE `statuses`.`name` IN (" . implode(', ', $escaped_names) . ")
+            AND YEAR(`{$date_field}`) = '{$year}'
+            AND MONTH(`{$date_field}`) = '{$month}'";
+
+        $this->connect_to_db();
+        $result = $this->connection->query($query);
+        $this->close();
+        $row = $result->fetch_assoc();
+        return intval($row['count']);
+    }
+
+    function count_repairs_in_month(int $year, int $month): int {
+        $year = intval($year);
+        $month = intval($month);
+
+        $query = "SELECT COUNT(*) AS `count` FROM `repairs`
+            WHERE YEAR(`register_date`) = '{$year}'
+            AND MONTH(`register_date`) = '{$month}'";
+
+        $this->connect_to_db();
+        $result = $this->connection->query($query);
+        $this->close();
+        $row = $result->fetch_assoc();
+        return intval($row['count']);
+    }
+
     function list_repairs(int $status_id = 0, int $limit = 0, int $offset = 0, string $sort_by = 'register_date', string $sort_dir = 'DESC'): array{
         $array = array();
         $query = "SELECT 

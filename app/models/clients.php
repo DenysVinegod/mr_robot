@@ -50,5 +50,14 @@ class Clients extends ModelsBase {
             } else return 0;
         } else return 0;
     }
+
+    function count_clients(): int {
+        $query = "SELECT COUNT(*) AS `count` FROM `clients`";
+        $this->connect_to_db();
+        $result = $this->connection->query($query);
+        $this->close();
+        $row = $result->fetch_assoc();
+        return intval($row['count']);
+    }
 }
 ?>
